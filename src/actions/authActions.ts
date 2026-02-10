@@ -3,6 +3,8 @@ export type LoginState = {
     error?: string;
 } | undefined;
 
+
+// ── Login ──────────────────────────────────────────────
 export const login = async (_prevState: LoginState, formData: FormData): Promise<LoginState> => {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
@@ -65,4 +67,18 @@ export const signup = async (_prevState: SignupState, formData: FormData): Promi
     localStorage.setItem("user", JSON.stringify({ email, name }));
 
     return { success: true, message: "Account created successfully!" };
+};
+
+// ── Logout ─────────────────────────────────────────────
+export type LogoutState = {
+    success: boolean;
+} | undefined;
+
+export const logout = async (): Promise<LogoutState> => {
+    // Simulate an API call
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user");
+    return { success: true };
 };

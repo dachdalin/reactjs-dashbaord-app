@@ -1,6 +1,7 @@
-
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
+import { useActionState, useEffect } from "react";
+import { logout, type LogoutState } from "../actions/authActions";
 import UserProfile from "./ui/UserProfile";
 import {
   HomeIcon,
@@ -57,8 +58,8 @@ const links: LinkType[] = [
 ];
 
 function NavLinks() {
-    const { pathname } = useLocation();
-    const activePath = pathname;
+  const { pathname } = useLocation();
+  const activePath = pathname;
 
   return (
     <nav className="flex-1 space-y-1 px-3 py-4">
@@ -75,15 +76,20 @@ function NavLinks() {
             className={clsx(
               "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
               {
-                "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30": isActive,
+                "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30":
+                  isActive,
                 "text-gray-300 hover:bg-white/10 hover:text-white": !isActive,
-              }
+              },
             )}
           >
-            <LinkIcon className={clsx(
-              "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-              isActive ? "text-white" : "text-gray-400 group-hover:text-white"
-            )} />
+            <LinkIcon
+              className={clsx(
+                "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
+                isActive
+                  ? "text-white"
+                  : "text-gray-400 group-hover:text-white",
+              )}
+            />
             <span>{link.name}</span>
             {isActive && (
               <div className="ml-auto h-2 w-2 rounded-full bg-white animate-pulse" />
@@ -95,11 +101,17 @@ function NavLinks() {
   );
 }
 
-
-
 function LogoutButton() {
+  const [state, formAction] = useActionState<LogoutState>(logout, undefined);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state?.success) {
+      navigate("/auth/login", { replace: true });
+    }
+  }, [state, navigate]);
   return (
-    <form action={"/logout"} className="px-4 pb-4">
+    <form action={formAction} method="post" className="px-4 pb-4">
       <button
         type="submit"
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 bg-white/5 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 border border-white/10 hover:border-red-500/30"
@@ -117,8 +129,18 @@ export default function SideNav() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
         <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-          <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <svg
+            className="h-6 w-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 10V3L4 14h7v7l9-11h-7z"
+            />
           </svg>
         </div>
         <div>
