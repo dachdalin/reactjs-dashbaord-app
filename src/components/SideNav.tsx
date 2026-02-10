@@ -75,7 +75,7 @@ function NavLinks() {
             className={clsx(
               "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
               {
-                "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30": isActive,
+                "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30": isActive,
                 "text-gray-300 hover:bg-white/10 hover:text-white": !isActive,
               }
             )}
@@ -113,10 +113,10 @@ function LogoutButton() {
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950">
+    <div className="flex h-full flex-col bg-linear-to-b from-slate-900 via-slate-900 to-slate-950">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+        <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
           <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
