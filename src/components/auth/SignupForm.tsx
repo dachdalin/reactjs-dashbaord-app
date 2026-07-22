@@ -1,6 +1,6 @@
-import { useActionState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signup, type SignupState } from "../../actions/authActions";
+import { useAuth } from "../../context/AuthContext";
 
 // Icon components for a polished look
 const UserIcon = () => (
@@ -74,17 +74,40 @@ const SpinnerIcon = () => (
 );
 
 export function SignupForm() {
-  const [state, action, pending] = useActionState<SignupState, FormData>(
-    signup,
-    undefined,
-  );
+  const { register, isPending } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (state?.success) {
-      navigate("/dashboard", { replace: true });
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    const name = fd.get("name") as string;
+    const email = fd.get("email") as string;
+    const password = fd.get("password") as string;
+
+    if (!name || name.trim().length < 2) {
+      setError("Name must be at least 2 characters.");
+      return;
     }
-  }, [state, navigate]);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!password || password.length < 8) {
+      setError("Password must be at least 8 characters (uppercase, lowercase, number).");
+      return;
+    }
+
+    const err = await register(name.trim(), email.trim(), password);
+    if (err) {
+      setError(err);
+    } else {
+      setSuccess(true);
+      setTimeout(() => navigate("/dashboard", { replace: true }), 1000);
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
@@ -100,7 +123,7 @@ export function SignupForm() {
         </div>
 
         <form
-          action={action}
+          onSubmit={handleSubmit}
           className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8 space-y-6"
         >
           {/* Header */}
@@ -125,24 +148,20 @@ export function SignupForm() {
           </div>
 
           {/* Success/Error Message */}
-          {state?.message && (
+          {success && (
             <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm">
-              <svg
-                className="w-5 h-5 text-emerald-400 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-emerald-300 text-sm font-medium">
-                {state.message}
-              </p>
+              <p className="text-emerald-300 text-sm font-medium">Account created successfully!</p>
+            </div>
+          )}
+          {error && (
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {error}
             </div>
           )}
 
@@ -166,24 +185,6 @@ export function SignupForm() {
                 className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
-            {state?.errors?.name && (
-              <div className="flex items-center gap-2 text-red-400 text-sm">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {state.errors.name}
-              </div>
-            )}
           </div>
 
           {/* Email Field */}
@@ -206,24 +207,6 @@ export function SignupForm() {
                 className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
-            {state?.errors?.email && (
-              <div className="flex items-center gap-2 text-red-400 text-sm">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {state.errors.email}
-              </div>
-            )}
           </div>
 
           {/* Password Field */}
@@ -246,37 +229,19 @@ export function SignupForm() {
                 className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
-            {state?.errors?.password && (
-              <div className="mt-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                <p className="text-red-400 text-sm font-medium mb-1">
-                  Password must:
-                </p>
-                <ul className="text-red-300 text-sm space-y-1">
-                  {state.errors.password.map((error) => (
-                    <li key={error} className="flex items-center gap-2">
-                      <span className="w-1 h-1 rounded-full bg-red-400" />
-                      {error}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
           {/* Submit Button */}
           <button
-            disabled={pending}
+            disabled={isPending}
             type="submit"
             className="relative w-full py-4 px-6 rounded-xl font-semibold text-white overflow-hidden group disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300"
           >
-            {/* Gradient background */}
             <div className="absolute inset-0 bg-linear-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-size-[200%_100%] group-hover:animate-shimmer transition-all" />
-            {/* Glow effect */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-indigo-600/50 via-purple-600/50 to-indigo-600/50 blur-xl" />
-            {/* Button content */}
             <span className="relative flex items-center justify-center gap-2">
-              {pending && <SpinnerIcon />}
-              {pending ? "Creating Account..." : "Create Account"}
+              {isPending && <SpinnerIcon />}
+              {isPending ? "Creating Account..." : "Create Account"}
             </span>
           </button>
 

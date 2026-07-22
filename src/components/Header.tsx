@@ -1,53 +1,156 @@
+import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
+import { notificationsApi, type NotificationResponse } from "../lib/api";
+
+const TYPE_ICONS: Record<string, string> = {
+  SYSTEM: "⚙️",
+  COMMENT: "💬",
+  LIKE: "❤️",
+};
+
+function timeAgo(isoDate: string): string {
+  const diff = (Date.now() - new Date(isoDate).getTime()) / 1000;
+  if (diff < 60) return `${Math.floor(diff)}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
+}
+
 export default function Header() {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<NotificationResponse[]>([]);
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Load notifications for this user
+  useEffect(() => {
+    if (!user) return;
+    notificationsApi
+      .list(user.id)
+      .then(setNotifications)
+      .catch(() => {});
+  }, [user]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  async function markRead(id: number) {
+    try {
+      const updated = await notificationsApi.update(id, { isRead: true });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? updated : n))
+      );
+    } catch {/* ignore */}
+  }
+
+  async function markAllRead() {
+    const unread = notifications.filter((n) => !n.isRead);
+    await Promise.allSettled(
+      unread.map((n) => notificationsApi.update(n.id, { isRead: true }))
+    );
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  }
+
+  const displayName = user?.name ?? "Guest";
+
   return (
     <header className="sticky top-0 z-30 hidden md:flex items-center justify-between px-8 py-4 bg-slate-900/50 backdrop-blur-xl border-b border-white/10">
       <div>
-        <h2 className="text-lg font-semibold text-white">Welcome back!</h2>
-        <p className="text-sm text-gray-400">
-          Here's what's happening with your projects today.
-        </p>
+        <h2 className="text-lg font-semibold text-white">Welcome back, {displayName}!</h2>
+        <p className="text-sm text-gray-400">Here's what's happening with your projects today.</p>
       </div>
       <div className="flex items-center gap-4">
         {/* Search */}
         <div className="relative">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-64 pl-10 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-          />
+          <input type="text" placeholder="Search..." className="w-64 pl-10 pr-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" />
         </div>
-        {/* Notifications */}
-        <button className="relative p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all">
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+
+        {/* Notifications Bell */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            id="notifications-bell"
+            onClick={() => setOpen((o) => !o)}
+            className="relative p-2 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+            aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            />
-          </svg>
-          <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
-            3
-          </span>
-        </button>
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-xs text-white flex items-center justify-center font-bold animate-pulse">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {/* Dropdown */}
+          {open && (
+            <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-slate-900 border border-white/10 shadow-2xl shadow-black/40 overflow-hidden z-50">
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                <span className="text-sm font-semibold text-white">Notifications</span>
+                {unreadCount > 0 && (
+                  <button onClick={markAllRead} className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
+                    Mark all read
+                  </button>
+                )}
+              </div>
+
+              {/* List */}
+              <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
+                {notifications.length === 0 ? (
+                  <div className="px-4 py-8 text-center">
+                    <p className="text-gray-500 text-sm">No notifications yet</p>
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <button
+                      key={n.id}
+                      onClick={() => markRead(n.id)}
+                      className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-white/5 transition-colors ${!n.isRead ? "bg-indigo-500/5" : ""}`}
+                    >
+                      <span className="text-lg shrink-0 mt-0.5">{TYPE_ICONS[n.type] ?? "🔔"}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className={`text-sm font-medium truncate ${n.isRead ? "text-gray-300" : "text-white"}`}>
+                            {n.title}
+                          </p>
+                          {!n.isRead && (
+                            <div className="h-2 w-2 rounded-full bg-indigo-400 shrink-0" />
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 line-clamp-1">{n.message}</p>
+                        <p className="text-[10px] text-gray-600 mt-0.5">{timeAgo(n.createdAt)}</p>
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+
+              {/* Footer */}
+              {notifications.length > 0 && (
+                <div className="px-4 py-2.5 border-t border-white/10 bg-white/2">
+                  <p className="text-xs text-center text-gray-500">
+                    {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}` : "All caught up!"}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

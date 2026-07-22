@@ -1,20 +1,29 @@
 
-import { useActionState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login, type LoginState } from "../../actions/authActions";
+import { useAuth } from "../../context/AuthContext";
 import EmailIcon from "../ui/EmailIcon";
 import LockIcon from "../ui/LockIcon";
 import SpinnerIcon from "../ui/SpinnerIcon";
 
 export default function SigninForm() {
-  const [state, formAction, pending] = useActionState<LoginState, FormData>(login, undefined);
+  const { login, isPending } = useAuth();
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (state?.success) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    const fd = new FormData(e.currentTarget);
+    const email = fd.get("email") as string;
+    const password = fd.get("password") as string;
+    const err = await login(email, password);
+    if (err) {
+      setError(err);
+    } else {
       navigate("/dashboard", { replace: true });
     }
-  }, [state, navigate]);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
@@ -30,16 +39,16 @@ export default function SigninForm() {
         </div>
 
         <form
-          action={formAction}
+          onSubmit={handleSubmit}
           className="relative backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-2xl p-8 space-y-6"
         >
           {/* Error Message */}
-          {state?.error && (
+          {error && (
             <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {state.error}
+              {error}
             </div>
           )}
 
@@ -131,7 +140,7 @@ export default function SigninForm() {
 
           {/* Submit Button */}
           <button
-            disabled={pending}
+            disabled={isPending}
             type="submit"
             className="relative w-full py-4 px-6 rounded-xl font-semibold text-white overflow-hidden group disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300"
           >
@@ -141,8 +150,8 @@ export default function SigninForm() {
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-indigo-600/50 via-purple-600/50 to-indigo-600/50 blur-xl" />
             {/* Button content */}
             <span className="relative flex items-center justify-center gap-2">
-              {pending && <SpinnerIcon />}
-              {pending ? "Signing in..." : "Sign In"}
+              {isPending && <SpinnerIcon />}
+              {isPending ? "Signing in..." : "Sign In"}
             </span>
           </button>
 

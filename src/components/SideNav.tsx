@@ -1,7 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
-import { useActionState, useEffect } from "react";
-import { logout, type LogoutState } from "../actions/authActions";
+import { useAuth } from "../context/AuthContext";
 import UserProfile from "./ui/UserProfile";
 import {
   HomeIcon,
@@ -102,24 +101,26 @@ function NavLinks() {
 }
 
 function LogoutButton() {
-  const [state, formAction] = useActionState<LogoutState>(logout, undefined);
+  const { logout, isPending } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (state?.success) {
-      navigate("/auth/login", { replace: true });
-    }
-  }, [state, navigate]);
+  async function handleLogout() {
+    await logout();
+    navigate("/auth/login", { replace: true });
+  }
+
   return (
-    <form action={formAction} method="post" className="px-4 pb-4">
+    <div className="px-4 pb-4">
       <button
-        type="submit"
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 bg-white/5 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 border border-white/10 hover:border-red-500/30"
+        type="button"
+        onClick={handleLogout}
+        disabled={isPending}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 bg-white/5 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 border border-white/10 hover:border-red-500/30 disabled:opacity-50"
       >
         <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
-        Sign Out
+        {isPending ? "Signing out..." : "Sign Out"}
       </button>
-    </form>
+    </div>
   );
 }
 
