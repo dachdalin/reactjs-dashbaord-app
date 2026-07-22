@@ -4,11 +4,9 @@ import { useAuth } from "../context/AuthContext";
 import UserProfile from "./ui/UserProfile";
 import {
   HomeIcon,
-  FolderIcon,
   UserGroupIcon,
-  ChartBarIcon,
-  CalendarIcon,
   DocumentDuplicateIcon,
+  DocumentTextIcon,
   Cog6ToothIcon,
   ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/outline";
@@ -25,29 +23,19 @@ const links: LinkType[] = [
     icon: HomeIcon,
   },
   {
-    name: "Projects",
-    href: "/projects",
-    icon: FolderIcon,
-  },
-  {
-    name: "Teams",
+    name: "Users",
     href: "/teams",
     icon: UserGroupIcon,
-  },
-  {
-    name: "Analytics",
-    href: "/analytics",
-    icon: ChartBarIcon,
-  },
-  {
-    name: "Calendar",
-    href: "/calendar",
-    icon: CalendarIcon,
   },
   {
     name: "Blogs",
     href: "/blogs",
     icon: DocumentDuplicateIcon,
+  },
+  {
+    name: "Pages",
+    href: "/pages",
+    icon: DocumentTextIcon,
   },
   {
     name: "Settings",

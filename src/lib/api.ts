@@ -255,4 +255,9 @@ export const settingsApi = {
 export const pagesApi = {
   list: () => request<PageResponse[]>('/pages'),
   get: (id: number) => request<PageResponse>(`/pages/${id}`),
+  create: (type: PageResponse['type'], content: string) =>
+    request<PageResponse>('/pages', { method: 'POST', body: JSON.stringify({ type, content }) }),
+  update: (id: number, type: PageResponse['type'], content: string) =>
+    request<PageResponse>(`/pages/${id}`, { method: 'PUT', body: JSON.stringify({ type, content }) }),
+  delete: (id: number) => request<void>(`/pages/${id}`, { method: 'DELETE' }),
 };

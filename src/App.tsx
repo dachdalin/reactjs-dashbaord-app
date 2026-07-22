@@ -2,12 +2,10 @@
 import RootLayout from "./layouts/RootLayout";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Index";
-import Projects from "./pages/projects/Index";
 import Teams from "./pages/team/Index";
-import Analytics from "./pages/analytics/Index";
-import Calendar from "./pages/calendar/Index";
 import Blogs from "./pages/blog/Index";
 import Settings from "./pages/settings/Index";
+import PagesPage from "./pages/pages/Index";
 import NotFound from "./pages/erorr/NotFound";
 import LoginPage from "./pages/auth/login/Login";
 import RegisterPage from "./pages/auth/register/Register";
@@ -31,34 +29,10 @@ export default function App() {
           }
         />
         <Route
-          path="/projects"
-          element={
-            <RootLayout>
-              <Projects />
-            </RootLayout>
-          }
-        />
-        <Route
           path="/teams"
           element={
             <RootLayout>
               <Teams />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <RootLayout>
-              <Analytics />
-            </RootLayout>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <RootLayout>
-              <Calendar />
             </RootLayout>
           }
         />
@@ -75,6 +49,14 @@ export default function App() {
           element={
             <RootLayout>
               <Settings />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/pages"
+          element={
+            <RootLayout>
+              <PagesPage />
             </RootLayout>
           }
         />
