@@ -7,6 +7,7 @@ import {
   UserGroupIcon,
   DocumentDuplicateIcon,
   DocumentTextIcon,
+  ChatBubbleLeftEllipsisIcon,
   Cog6ToothIcon,
   ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/outline";
@@ -31,6 +32,11 @@ const links: LinkType[] = [
     name: "Blogs",
     href: "/blogs",
     icon: DocumentDuplicateIcon,
+  },
+  {
+    name: "Comments",
+    href: "/comments",
+    icon: ChatBubbleLeftEllipsisIcon,
   },
   {
     name: "Pages",

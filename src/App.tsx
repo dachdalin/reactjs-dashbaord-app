@@ -6,6 +6,7 @@ import Teams from "./pages/team/Index";
 import Blogs from "./pages/blog/Index";
 import Settings from "./pages/settings/Index";
 import PagesPage from "./pages/pages/Index";
+import Comments from "./pages/comments/Index";
 import NotFound from "./pages/erorr/NotFound";
 import LoginPage from "./pages/auth/login/Login";
 import RegisterPage from "./pages/auth/register/Register";
@@ -57,6 +58,14 @@ export default function App() {
           element={
             <RootLayout>
               <PagesPage />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/comments"
+          element={
+            <RootLayout>
+              <Comments />
             </RootLayout>
           }
         />

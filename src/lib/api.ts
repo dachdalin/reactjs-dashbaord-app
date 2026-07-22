@@ -219,6 +219,8 @@ export const tagsApi = {
 export const contactsApi = {
   list: () => request<ContactResponse[]>('/contacts'),
   get: (id: number) => request<ContactResponse>(`/contacts/${id}`),
+  update: (id: number, body: Partial<{ name: string; email: string; subject: string; message: string }>) =>
+    request<ContactResponse>(`/contacts/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
   delete: (id: number) => request<void>(`/contacts/${id}`, { method: 'DELETE' }),
 };
 
