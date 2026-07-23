@@ -6,6 +6,41 @@ import PostBannerUploader from "../../components/blog/PostBannerUploader";
 
 const POST_TYPES = ["ARTICLE", "NEWS", "TUTORIAL", "CODE"] as const;
 
+const POPULAR_LANGUAGES = [
+  "javascript",
+  "typescript",
+  "python",
+  "html",
+  "css",
+  "sql",
+  "json",
+  "bash",
+  "shell",
+  "java",
+  "cpp",
+  "csharp",
+  "go",
+  "rust",
+  "php",
+  "ruby",
+  "swift",
+  "kotlin",
+  "dart",
+  "yaml",
+  "markdown",
+  "xml",
+  "dockerfile",
+  "graphql",
+  "scala",
+  "r",
+  "lua",
+  "elixir",
+  "powershell",
+  "assembly",
+  "matlab",
+  "groovy",
+];
+
 // ── Section Types (Text, Code & Heading) ──────────────────
 type SectionType = "text" | "code" | "heading";
 
@@ -246,106 +281,152 @@ export default function PostEditor() {
   }
 
   return (
-    <form onSubmit={handleSavePost} className="space-y-8 pb-16">
-      {/* Top Bar Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+    <form onSubmit={handleSavePost} className="space-y-8 pb-20">
+      {/* ── TOP GLASS NAV BAR ────────────────── */}
+      <div className="sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-xs">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate("/blogs")}
-            className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
-            title="Back to Posts"
+            className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-950 transition-all shadow-xs"
+            title="Back to Blog List"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-950">
-              {isEditing ? "Edit Blog Post" : "Create New Blog Post"}
-            </h1>
-            <p className="text-xs text-slate-500">
-              {isEditing ? `Editing Post #${id}` : "Configure post metadata, banner, and build section table"}
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-slate-950">
+                {isEditing ? "Edit Blog Article" : "Create New Blog Article"}
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 text-[11px] font-bold font-mono">
+                {isEditing ? `POST #${id}` : "DRAFT"}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Build your article with custom text, heading levels, and syntax code sections.
             </p>
           </div>
         </div>
 
-        {/* Publish & Save Controls */}
+        {/* Status Pill & Action Buttons */}
         <div className="flex items-center gap-3">
-          <label className="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm">
+          <label className="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100/80 px-3.5 py-2 rounded-xl border border-slate-200 transition-colors">
+            <span className="relative flex h-2.5 w-2.5">
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                  status ? "bg-emerald-400" : "bg-amber-400"
+                }`}
+              />
+              <span
+                className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                  status ? "bg-emerald-500" : "bg-amber-500"
+                }`}
+              />
+            </span>
             <input
               type="checkbox"
               checked={status}
               onChange={(e) => setStatus(e.target.checked)}
-              className="w-4 h-4 rounded text-sky-500 focus:ring-sky-400"
+              className="sr-only"
             />
-            <span className="text-xs font-semibold text-slate-800">
-              {status ? "Live (Published)" : "Draft"}
+            <span className="text-xs font-semibold text-slate-800 select-none">
+              {status ? "Published" : "Draft Mode"}
             </span>
           </label>
 
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-medium text-sm hover:bg-sky-400 transition-all disabled:opacity-50 shadow-sm flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-semibold text-sm hover:bg-sky-400 transition-all active:scale-95 disabled:opacity-50 shadow-md shadow-sky-200 flex items-center gap-2"
           >
-            {saving ? "Saving Post..." : isEditing ? "Update Post" : "Publish Post"}
+            {saving ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-slate-950" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span>{isEditing ? "Update Article" : "Publish Article"}</span>
+              </>
+            )}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center justify-between">
-          <span>{error}</span>
-          <button type="button" onClick={() => setError(null)} className="text-xs font-bold underline">
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-base">⚠️</span>
+            <span>{error}</span>
+          </div>
+          <button type="button" onClick={() => setError(null)} className="text-xs font-bold underline hover:text-red-900">
             Dismiss
           </button>
         </div>
       )}
 
-      {/* Post Banner Component */}
+      {/* ── BANNER UPLOADER COMPONENT ────────────────── */}
       <PostBannerUploader
         postId={isEditing && id ? Number(id) : undefined}
         imageUrl={bannerUrl}
         onImageChange={setBannerUrl}
       />
 
-      {/* Post Metadata Card */}
-      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-5">
-        <h2 className="text-lg font-bold text-slate-950 border-b border-slate-100 pb-3">Post Details</h2>
+      {/* ── POST METADATA CARD ────────────────── */}
+      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <h2 className="text-lg font-bold text-slate-950 flex items-center gap-2">
+            <span>📝</span> Article Information
+          </h2>
+          <span className="text-xs text-slate-500 font-medium">Basic fields & metadata</span>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Article Title *</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Article Title *
+            </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Building Modern Web Applications with React"
+              placeholder="e.g. Building Modern Dashboards with React 19 & Tailwind"
               required
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-950 font-medium placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Short Summary / Excerpt</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Short Summary / Excerpt
+            </label>
             <input
               type="text"
               value={shortDesc}
               onChange={(e) => setShortDesc(e.target.value)}
-              placeholder="Brief overview for post summary cards..."
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+              placeholder="Brief 1-2 sentence overview for post summary cards..."
+              className="w-full px-4 py-3 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-950 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Category / Type *</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Category / Type *
+            </label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-950 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
             >
               {POST_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -356,20 +437,29 @@ export default function PostEditor() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Est. Read Time (Minutes)</label>
-            <input
-              type="number"
-              min={1}
-              max={120}
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
-            />
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Est. Read Time (Minutes)
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                min={1}
+                max={120}
+                value={duration}
+                onChange={(e) => setDuration(Number(e.target.value))}
+                className="w-full px-4 py-3 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-950 font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all pr-16"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 pointer-events-none">
+                MIN
+              </span>
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Tags</label>
-            <div className="flex flex-wrap gap-1.5 mb-2">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Article Tags
+            </label>
+            <div className="flex flex-wrap gap-1.5 mb-2 max-h-24 overflow-y-auto p-1">
               {allTags.map((tag) => (
                 <button
                   key={tag.id}
@@ -379,9 +469,9 @@ export default function PostEditor() {
                       prev.includes(tag.id) ? prev.filter((id) => id !== tag.id) : [...prev, tag.id]
                     )
                   }
-                  className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                     selectedTagIds.includes(tag.id)
-                      ? "bg-sky-500 text-slate-950 shadow-sm"
+                      ? "bg-sky-500 text-slate-950 shadow-xs scale-105"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
@@ -395,54 +485,92 @@ export default function PostEditor() {
                 onChange={(e) => setNewTagTitle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleCreateTag())}
                 placeholder="New tag..."
-                className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-950 text-xs focus:outline-none focus:ring-1 focus:ring-sky-400/40"
+                className="flex-1 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-950 text-xs focus:outline-none focus:ring-1 focus:ring-sky-400"
               />
               <button
                 type="button"
                 onClick={handleCreateTag}
-                className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-800 text-xs font-semibold hover:bg-slate-200 transition-colors"
+                className="px-3.5 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold transition-colors"
               >
-                Add
+                + Add
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── SECTION TABLE CARD ────────────────── */}
-      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-4">
-        <h2 className="text-lg font-bold text-slate-950 border-b border-slate-100 pb-3">Article Sections</h2>
+      {/* ── SECTION BUILDER CARD TABLE ────────────────── */}
+      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-950">Article Content Sections</h2>
+              <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-mono font-bold">
+                {sections.length} {sections.length === 1 ? "Section" : "Sections"}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Add rows to build your article structure using Text, Heading, or Code blocks.
+            </p>
+          </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-slate-200 rounded-xl overflow-hidden text-sm" id="sectionTable">
-            <thead className="bg-slate-100 text-slate-900 text-center font-bold">
+          {/* Quick Add Buttons */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => addSectionRow(sections.length - 1, "text")}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center gap-1"
+            >
+              <span>📝</span> + Text
+            </button>
+            <button
+              type="button"
+              onClick={() => addSectionRow(sections.length - 1, "heading")}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center gap-1"
+            >
+              <span>🏷️</span> + Heading
+            </button>
+            <button
+              type="button"
+              onClick={() => addSectionRow(sections.length - 1, "code")}
+              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-semibold transition-all flex items-center gap-1"
+            >
+              <span>⚡</span> + Code
+            </button>
+          </div>
+        </div>
+
+        {/* Section Table */}
+        <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-xs">
+          <table className="w-full border-collapse text-sm" id="sectionTable">
+            <thead className="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider text-center border-b border-slate-200">
               <tr>
-                <th style={{ width: "55%" }} className="border border-slate-200 px-4 py-3 text-left">
-                  Content
+                <th style={{ width: "55%" }} className="px-4 py-3.5 text-left font-bold text-slate-700">
+                  Content Editor
                 </th>
-                <th style={{ width: "15%" }} className="border border-slate-200 px-3 py-3">
-                  Type
+                <th style={{ width: "15%" }} className="px-3 py-3.5 font-bold text-slate-700">
+                  Section Type
                 </th>
-                <th style={{ width: "15%" }} className="border border-slate-200 px-3 py-3">
+                <th style={{ width: "15%" }} className="px-3 py-3.5 font-bold text-slate-700">
                   Language / Level
                 </th>
-                <th style={{ width: "15%" }} className="border border-slate-200 px-3 py-3">
+                <th style={{ width: "15%" }} className="px-3 py-3.5 font-bold text-slate-700">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200">
+            <tbody className="divide-y divide-slate-200 bg-white">
               {sections.map((sec, idx) => (
-                <tr key={sec.id} className="align-top hover:bg-slate-50/60 transition-colors">
+                <tr key={sec.id} className="align-top hover:bg-sky-50/20 transition-colors group">
                   {/* Content Column */}
-                  <td className="border border-slate-200 p-3">
+                  <td className="p-3.5 border-r border-slate-100">
                     {sec.type === "text" && (
                       <textarea
-                        rows={5}
+                        rows={4}
                         value={sec.content}
                         onChange={(e) => updateSectionFields(sec.id, { content: e.target.value })}
-                        placeholder="Enter section content or text..."
-                        className="w-full p-3 rounded-xl bg-white border border-slate-200 text-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400/40 resize-y"
+                        placeholder="Type section paragraph text..."
+                        className="w-full p-3.5 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-950 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all leading-relaxed resize-y"
                       />
                     )}
 
@@ -451,8 +579,8 @@ export default function PostEditor() {
                         type="text"
                         value={sec.content}
                         onChange={(e) => updateSectionFields(sec.id, { content: e.target.value })}
-                        placeholder="Enter heading title..."
-                        className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 font-bold text-lg focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+                        placeholder="Enter section heading title..."
+                        className="w-full px-4 py-3 rounded-xl bg-slate-50/50 border border-slate-200 text-slate-950 font-bold text-base focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all"
                       />
                     )}
 
@@ -462,41 +590,68 @@ export default function PostEditor() {
                         value={sec.code}
                         onChange={(e) => updateSectionFields(sec.id, { code: e.target.value })}
                         placeholder="// Paste or write code snippet here..."
-                        className="w-full p-3 rounded-xl bg-slate-950 text-slate-100 font-mono text-sm border border-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400/50 resize-y"
+                        className="w-full p-4 rounded-xl bg-slate-950 text-slate-100 font-mono text-xs border border-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400/50 resize-y leading-relaxed"
                       />
                     )}
                   </td>
 
-                  {/* Type Dropdown Column (Text, Code & Heading) */}
-                  <td className="border border-slate-200 p-3">
+                  {/* Type Dropdown Column */}
+                  <td className="p-3.5 border-r border-slate-100">
                     <select
                       value={sec.type}
                       onChange={(e) => changeSectionType(sec.id, e.target.value as SectionType)}
-                      className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-950 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+                      className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-xs font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400/40"
                     >
-                      <option value="text">Text</option>
-                      <option value="heading">Heading</option>
-                      <option value="code">Code</option>
+                      <option value="text">📝 Text</option>
+                      <option value="heading">🏷️ Heading</option>
+                      <option value="code">⚡ Code</option>
                     </select>
                   </td>
 
                   {/* Language / Level Column */}
-                  <td className="border border-slate-200 p-3">
+                  <td className="p-3.5 border-r border-slate-100">
                     {sec.type === "code" ? (
-                      <input
-                        type="text"
-                        value={sec.language}
-                        onChange={(e) => updateSectionFields(sec.id, { language: e.target.value })}
-                        placeholder="e.g. javascript"
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-950 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-sky-400/40"
-                      />
+                      <div className="space-y-1.5">
+                        <select
+                          value={
+                            POPULAR_LANGUAGES.includes((sec.language || "").toLowerCase())
+                              ? (sec.language || "").toLowerCase()
+                              : "custom"
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val !== "custom") {
+                              updateSectionFields(sec.id, { language: val });
+                            } else {
+                              updateSectionFields(sec.id, { language: "" });
+                            }
+                          }}
+                          className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-xs font-mono font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+                        >
+                          {POPULAR_LANGUAGES.map((lang) => (
+                            <option key={lang} value={lang}>
+                              {lang.toUpperCase()}
+                            </option>
+                          ))}
+                          <option value="custom">Other / Custom...</option>
+                        </select>
+                        {!POPULAR_LANGUAGES.includes((sec.language || "").toLowerCase()) && (
+                          <input
+                            type="text"
+                            value={sec.language}
+                            onChange={(e) => updateSectionFields(sec.id, { language: e.target.value })}
+                            placeholder="Type custom language..."
+                            className="w-full px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-950 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-sky-400"
+                          />
+                        )}
+                      </div>
                     ) : sec.type === "heading" ? (
                       <select
                         value={sec.level}
                         onChange={(e) => updateSectionFields(sec.id, { level: e.target.value })}
-                        className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-950 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-xs font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-400/40"
                       >
-                        <option value="h1">H1 (Title)</option>
+                        <option value="h1">H1 (Main Title)</option>
                         <option value="h2">H2 (Subtitle)</option>
                         <option value="h3">H3 (Subheader)</option>
                       </select>
@@ -505,13 +660,13 @@ export default function PostEditor() {
                         type="text"
                         disabled
                         placeholder="N/A"
-                        className="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 text-xs text-center"
+                        className="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-400 text-xs text-center font-mono"
                       />
                     )}
                   </td>
 
                   {/* Actions Column */}
-                  <td className="border border-slate-200 p-3 text-center align-middle">
+                  <td className="p-3.5 text-center align-middle">
                     <div className="flex items-center justify-center gap-1.5 flex-wrap">
                       {/* Move Up / Down */}
                       <button
@@ -519,7 +674,7 @@ export default function PostEditor() {
                         onClick={() => moveSectionRow(idx, "up")}
                         disabled={idx === 0}
                         title="Move Up"
-                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs disabled:opacity-30 transition-colors"
+                        className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs disabled:opacity-30 transition-all"
                       >
                         ▲
                       </button>
@@ -528,7 +683,7 @@ export default function PostEditor() {
                         onClick={() => moveSectionRow(idx, "down")}
                         disabled={idx === sections.length - 1}
                         title="Move Down"
-                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs disabled:opacity-30 transition-colors"
+                        className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs disabled:opacity-30 transition-all"
                       >
                         ▼
                       </button>
@@ -537,8 +692,8 @@ export default function PostEditor() {
                       <button
                         type="button"
                         onClick={() => addSectionRow(idx, "text")}
-                        title="Add New Section Below"
-                        className="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold transition-all shadow-xs"
+                        title="Insert Section Below"
+                        className="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold transition-all shadow-xs active:scale-95"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -551,7 +706,7 @@ export default function PostEditor() {
                           type="button"
                           onClick={() => removeSectionRow(sec.id)}
                           title="Delete Section"
-                          className="p-2 rounded-lg bg-red-500 hover:bg-red-400 text-white text-xs transition-all shadow-xs"
+                          className="p-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold transition-all active:scale-95"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -564,6 +719,20 @@ export default function PostEditor() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Append Section Footer Bar */}
+        <div className="flex items-center justify-center pt-2">
+          <button
+            type="button"
+            onClick={() => addSectionRow(sections.length - 1, "text")}
+            className="px-5 py-2.5 rounded-xl border border-dashed border-slate-300 hover:border-sky-400 bg-slate-50 hover:bg-sky-50/50 text-slate-700 hover:text-sky-700 text-xs font-bold transition-all flex items-center gap-2 shadow-xs"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add New Article Section Row
+          </button>
         </div>
       </div>
     </form>
