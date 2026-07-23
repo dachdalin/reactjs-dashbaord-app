@@ -5,6 +5,7 @@ import Dashboard from "./pages/dashboard/Index";
 import Teams from "./pages/team/Index";
 import Blogs from "./pages/blog/Index";
 import Settings from "./pages/settings/Index";
+import ProfilePage from "./pages/profile/Index";
 import PagesPage from "./pages/pages/Index";
 import Comments from "./pages/comments/Index";
 import NotFound from "./pages/erorr/NotFound";
@@ -66,6 +67,14 @@ export default function App() {
           element={
             <RootLayout>
               <Comments />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <RootLayout>
+              <ProfilePage />
             </RootLayout>
           }
         />
