@@ -114,12 +114,12 @@ export default function SendNotificationModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="w-full max-w-xl rounded-2xl bg-black border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/70 backdrop-blur-md">
+      <div className="w-full max-w-xl rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/10">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white text-black flex items-center justify-center shadow-lg shadow-black/20">
+            <div className="h-10 w-10 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center shadow-lg shadow-sky-200/60">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -130,13 +130,13 @@ export default function SendNotificationModal({
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Create & Push Notification</h2>
-              <p className="text-xs text-white/60">Send custom notification alerts to users</p>
+              <h2 className="text-xl font-bold text-slate-950">Create & Push Notification</h2>
+              <p className="text-xs text-slate-500">Send custom notification alerts to users</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -146,7 +146,7 @@ export default function SendNotificationModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {error && (
-            <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-sm flex items-center gap-2">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -155,7 +155,7 @@ export default function SendNotificationModal({
           )}
 
           {successMsg && (
-            <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-sm flex items-center gap-2">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -165,7 +165,7 @@ export default function SendNotificationModal({
 
           {/* Quick Templates */}
           <div>
-            <label className="block text-xs font-semibold text-white/60 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
               Quick Templates
             </label>
             <div className="flex flex-wrap gap-2">
@@ -174,7 +174,7 @@ export default function SendNotificationModal({
                   key={tmpl.title}
                   type="button"
                   onClick={() => applyTemplate(tmpl)}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-medium text-white/80 hover:text-white transition-all"
+                  className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 hover:text-sky-700 transition-all"
                 >
                   ⚡ {tmpl.title}
                 </button>
@@ -184,12 +184,12 @@ export default function SendNotificationModal({
 
           {/* Recipient User */}
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1.5">Recipient User *</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Recipient User *</label>
             <select
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
               disabled={loadingUsers}
-              className="w-full px-4 py-3 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 focus:outline-none focus:ring-2 focus:ring-sky-400/40 disabled:opacity-50"
             >
               <option value="ALL">📢 All Users (Broadcast Notification)</option>
               {users.map((u) => (
@@ -202,7 +202,7 @@ export default function SendNotificationModal({
 
           {/* Type Selection */}
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1.5">Notification Type *</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Notification Type *</label>
             <div className="grid grid-cols-3 gap-3">
               {TYPE_OPTIONS.map((opt) => (
                 <button
@@ -211,13 +211,13 @@ export default function SendNotificationModal({
                   onClick={() => setType(opt.value)}
                   className={`p-3 rounded-xl border text-left transition-all ${
                     type === opt.value
-                      ? "bg-white/20 border-white/20 text-white shadow-lg shadow-black/20"
-                      : "bg-white/5 border-white/10 text-white/60 hover:bg-white/10 hover:text-white/90"
+                      ? "bg-slate-100 border-slate-200 text-slate-950 shadow-lg shadow-sky-200/60"
+                      : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-950"
                   }`}
                 >
                   <div className="text-xl mb-1">{opt.icon}</div>
-                  <div className="text-sm font-semibold text-white">{opt.label}</div>
-                  <div className="text-[10px] text-white/60 mt-0.5 line-clamp-1">{opt.desc}</div>
+                  <div className="text-sm font-semibold text-slate-950">{opt.label}</div>
+                  <div className="text-[10px] text-slate-500 mt-0.5 line-clamp-1">{opt.desc}</div>
                 </button>
               ))}
             </div>
@@ -225,27 +225,27 @@ export default function SendNotificationModal({
 
           {/* Title */}
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1.5">Title *</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Title *</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. System Maintenance Scheduled"
               required
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-transparent transition-all"
             />
           </div>
 
           {/* Message */}
           <div>
-            <label className="block text-sm font-medium text-white/80 mb-1.5">Message *</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">Message *</label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
               placeholder="Write notification message content here..."
               required
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent resize-none transition-all"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-transparent resize-none transition-all"
             />
           </div>
 
@@ -254,14 +254,14 @@ export default function SendNotificationModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl border border-white/20 text-white hover:bg-white/10 transition-colors"
+              className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={sending}
-              className="px-6 py-2.5 rounded-xl bg-white text-black font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-black/20"
+              className="px-6 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-sky-200/60"
             >
               {sending && (
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">

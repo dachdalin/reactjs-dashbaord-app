@@ -1,6 +1,6 @@
 const SpinnerIcon = () => (
   <svg
-    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+    className="animate-spin -ml-1 mr-3 h-5 w-5 text-slate-100"
     fill="none"
     viewBox="0 0 24 24"
   >

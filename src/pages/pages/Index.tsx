@@ -93,17 +93,17 @@ function EditorPanel({
       {/* Panel header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-white text-black flex items-center justify-center shadow-lg">
+          <div className="h-10 w-10 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center shadow-lg">
             {meta.icon}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">{meta.label}</h2>
-            <p className="text-xs text-white/60">{meta.desc}</p>
+            <h2 className="text-xl font-bold text-slate-950">{meta.label}</h2>
+            <p className="text-xs text-slate-500">{meta.desc}</p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+          className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-colors"
           title="Close editor"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,8 +117,8 @@ function EditorPanel({
         <div
           className={`mb-4 px-4 py-3 rounded-xl text-sm flex items-center gap-2 ${
             msg.kind === "success"
-              ? "bg-white/10 text-white border border-white/20 text-white"
-              : "bg-white/10 border border-white/20 text-white"
+              ? "bg-slate-50 text-slate-950 border border-slate-200 text-slate-950"
+              : "bg-slate-50 border border-slate-200 text-slate-950"
           }`}
         >
           {msg.kind === "success" ? (
@@ -145,8 +145,8 @@ function EditorPanel({
       </div>
 
       {/* Footer actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-white/10">
-        <div className="text-xs text-white/40">
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+        <div className="text-xs text-slate-500">
           {page
             ? `Last updated: ${new Date(page.updatedAt).toLocaleString()}`
             : "This page has not been created yet."}
@@ -154,14 +154,14 @@ function EditorPanel({
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-white/20 text-white text-sm hover:bg-white/10 transition-colors"
+            className="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-950 text-sm hover:bg-slate-50 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2.5 rounded-xl bg-white text-black text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity shadow-lg shadow-black/20 flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-sky-500 text-slate-950 text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity shadow-lg shadow-sky-200/60 flex items-center gap-2"
           >
             {saving && (
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -214,8 +214,8 @@ export default function Pages() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white">Pages</h1>
-        <p className="text-white/60 mt-1">
+        <h1 className="text-3xl font-bold text-slate-950">Pages</h1>
+        <p className="text-slate-500 mt-1">
           Manage static content pages for your website.
         </p>
       </div>
@@ -229,40 +229,40 @@ export default function Pages() {
             return (
               <div
                 key={type}
-                className="group relative rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20 transition-all overflow-hidden cursor-pointer"
+                className="group relative rounded-2xl bg-white border border-slate-200 hover:border-slate-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-200/70 transition-all overflow-hidden cursor-pointer"
                 onClick={() => setActiveType(type)}
               >
                 {/* Accent bar */}
-                <div className="h-1 bg-white" />
+                <div className="h-1 bg-sky-500" />
 
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-white text-black flex items-center justify-center shadow-lg">
+                    <div className="h-12 w-12 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center shadow-lg">
                       {meta.icon}
                     </div>
                     {/* Status */}
                     {loading ? (
-                      <div className="h-6 w-20 rounded-full bg-white/10 animate-pulse" />
+                      <div className="h-6 w-20 rounded-full bg-slate-50 animate-pulse" />
                     ) : page ? (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/15 text-white border border-white/20">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-500/15 text-slate-950 border border-slate-200">
                         ✓ Published
                       </span>
                     ) : (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/70 border border-white/20">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-50 text-slate-400 border border-slate-200">
                         Not created
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-white transition-colors">
+                  <h3 className="text-lg font-semibold text-slate-950 mb-1 group-hover:text-sky-700 transition-colors">
                     {meta.label}
                   </h3>
-                  <p className="text-sm text-white/60">{meta.desc}</p>
+                  <p className="text-sm text-slate-500">{meta.desc}</p>
 
                   {/* Preview snippet */}
                   {page && (
                     <div
-                      className="mt-4 text-xs text-white/40 line-clamp-2 leading-relaxed"
+                      className="mt-4 text-xs text-slate-500 line-clamp-2 leading-relaxed"
                       // Strip HTML tags for plain text preview
                       dangerouslySetInnerHTML={{
                         __html: page.content
@@ -275,15 +275,15 @@ export default function Pages() {
                   )}
 
                   {/* Footer */}
-                  <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/10">
+                  <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-200">
                     {page ? (
-                      <span className="text-xs text-white/40">
+                      <span className="text-xs text-slate-500">
                         Updated {new Date(page.updatedAt).toLocaleDateString()}
                       </span>
                     ) : (
-                      <span className="text-xs text-white/30">No content yet</span>
+                      <span className="text-xs text-slate-400">No content yet</span>
                     )}
-                    <span className="inline-flex items-center gap-1.5 text-sm text-white/80 font-medium group-hover:text-white transition-colors">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-slate-700 font-medium group-hover:text-sky-700 transition-colors">
                       {page ? "Edit" : "Create"}
                       <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -297,7 +297,7 @@ export default function Pages() {
         </div>
       ) : (
         /* ── Editor view ── */
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-6">
+        <div className="rounded-2xl bg-white border border-slate-200 p-6">
           <EditorPanel
             type={activeType}
             page={activePage}

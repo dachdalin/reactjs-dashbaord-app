@@ -16,15 +16,15 @@ export default function UserProfile() {
     .toUpperCase();
 
   const roleBadgeColor: Record<string, string> = {
-    ADMIN: "bg-white text-black",
-    AUTHOR: "bg-white text-black",
-    USER: "bg-white text-black",
+    ADMIN: "bg-sky-500 text-slate-950",
+    AUTHOR: "bg-sky-500 text-slate-950",
+    USER: "bg-sky-500 text-slate-950",
   };
-  const roleColor = roleBadgeColor[user?.type ?? "USER"] ?? "bg-white text-black";
+  const roleColor = roleBadgeColor[user?.type ?? "USER"] ?? "bg-sky-500 text-slate-950";
 
   return (
-    <div className="p-4 border-t border-white/10">
-      <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors cursor-pointer">
+    <div className="p-4 border-t border-slate-700/70">
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-900/70 hover:bg-slate-800/70 transition-colors cursor-pointer">
         <div className="relative">
           {user?.avatar ? (
             <img
@@ -33,15 +33,15 @@ export default function UserProfile() {
               className="h-10 w-10 rounded-full object-cover"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center">
-              <span className="text-black font-semibold text-sm">{initials}</span>
+            <div className="h-10 w-10 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center">
+              <span className="text-slate-950 font-semibold text-sm">{initials}</span>
             </div>
           )}
-          <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ${roleColor} border-2 border-black`} />
+          <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ${roleColor} border-2 border-slate-950`} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-white truncate">{displayName}</p>
-          <p className="text-xs text-white/60 truncate">{displayEmail}</p>
+          <p className="text-sm font-medium text-slate-100 truncate">{displayName}</p>
+          <p className="text-xs text-slate-400 truncate">{displayEmail}</p>
         </div>
         {user?.type && (
           <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${roleColor} opacity-80`}>

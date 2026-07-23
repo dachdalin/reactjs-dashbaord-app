@@ -22,8 +22,8 @@ function ToolBtn({
       }}
       className={`p-1.5 rounded-lg text-sm transition-all ${
         active
-          ? "bg-white text-black"
-          : "text-white/80 hover:bg-white/10 hover:text-white"
+          ? "bg-sky-500 text-slate-950"
+          : "text-slate-700 hover:bg-slate-50 hover:text-sky-700"
       }`}
     >
       {children}
@@ -33,7 +33,7 @@ function ToolBtn({
 
 // ── Separator ─────────────────────────────────────────────
 function Sep() {
-  return <div className="h-5 w-px bg-white/10 mx-1" />;
+  return <div className="h-5 w-px bg-slate-50 mx-1" />;
 }
 
 // ── execCommand wrapper ───────────────────────────────────
@@ -96,9 +96,9 @@ export default function RichTextEditor({
   }
 
   return (
-    <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden focus-within:border-white/40 focus-within:ring-1 focus-within:ring-white/20 transition-all">
+    <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden focus-within:border-sky-500/40 focus-within:ring-1 focus-within:ring-sky-400/20 transition-all">
       {/* ── Toolbar ── */}
-      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-white/10 bg-white/3">
+      <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-slate-200 bg-slate-50">
         {/* History */}
         <ToolBtn title="Undo" onClick={() => exec("undo")}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -221,7 +221,7 @@ export default function RichTextEditor({
             type="button"
             title={`Color ${c}`}
             onMouseDown={(e) => { e.preventDefault(); insertColor(c); }}
-            className="w-5 h-5 rounded-full border-2 border-white/20 hover:border-white/60 transition-colors shrink-0"
+            className="w-5 h-5 rounded-full border-2 border-slate-200 hover:border-sky-500/60 transition-colors shrink-0"
             style={{ background: c }}
           />
         ))}
@@ -247,7 +247,7 @@ export default function RichTextEditor({
         style={{ minHeight }}
         className={`
           rich-editor
-          px-6 py-5 text-white/90 text-sm leading-relaxed outline-none
+          px-6 py-5 text-slate-950 text-sm leading-relaxed outline-none
           focus:outline-none
         `}
       />
