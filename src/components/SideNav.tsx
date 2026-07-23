@@ -8,6 +8,7 @@ import {
   DocumentDuplicateIcon,
   DocumentTextIcon,
   ChatBubbleLeftEllipsisIcon,
+  TagIcon,
   Cog6ToothIcon,
   ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/outline";
@@ -32,6 +33,11 @@ const links: LinkType[] = [
     name: "Blogs",
     href: "/blogs",
     icon: DocumentDuplicateIcon,
+  },
+  {
+    name: "Tags",
+    href: "/tags",
+    icon: TagIcon,
   },
   {
     name: "Comments",

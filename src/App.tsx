@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Index";
 import Teams from "./pages/team/Index";
 import Blogs from "./pages/blog/Index";
+import PostEditor from "./pages/blog/PostEditor";
+import TagsPage from "./pages/tags/Index";
 import Settings from "./pages/settings/Index";
 import ProfilePage from "./pages/profile/Index";
 import PagesPage from "./pages/pages/Index";
@@ -43,6 +45,30 @@ export default function App() {
           element={
             <RootLayout>
               <Blogs />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/blogs/create"
+          element={
+            <RootLayout>
+              <PostEditor />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/blogs/edit/:id"
+          element={
+            <RootLayout>
+              <PostEditor />
+            </RootLayout>
+          }
+        />
+        <Route
+          path="/tags"
+          element={
+            <RootLayout>
+              <TagsPage />
             </RootLayout>
           }
         />
