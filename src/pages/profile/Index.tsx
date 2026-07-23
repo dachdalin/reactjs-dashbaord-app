@@ -114,37 +114,37 @@ export default function ProfilePage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white">User Profile</h1>
-        <p className="text-gray-400 mt-1">Manage your account information, profile avatar, and security.</p>
+        <h1 className="text-3xl font-bold text-slate-950">User Profile</h1>
+        <p className="text-slate-500 mt-1">Manage your account information, profile avatar, and security.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Avatar Card */}
-          <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 flex flex-col sm:flex-row items-center gap-6">
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
             <div className="relative group shrink-0">
               {user?.avatar ? (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="h-24 w-24 rounded-full object-cover border-2 border-indigo-500 shadow-xl"
+                  className="h-24 w-24 rounded-full object-cover border-2 border-sky-400 shadow-md"
                 />
               ) : (
-                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-xl">
+                <div className="h-24 w-24 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-md">
                   {initials}
                 </div>
               )}
               {uploadingAvatar && (
-                <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center text-xs text-white">
+                <div className="absolute inset-0 rounded-full bg-slate-950/70 flex items-center justify-center text-xs text-white">
                   Uploading...
                 </div>
               )}
             </div>
 
             <div className="space-y-2 text-center sm:text-left">
-              <h3 className="text-xl font-bold text-white">{user?.name}</h3>
-              <p className="text-sm text-gray-400">{user?.email}</p>
+              <h3 className="text-xl font-bold text-slate-950">{user?.name}</h3>
+              <p className="text-sm text-slate-500">{user?.email}</p>
               <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
                 <input
                   type="file"
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingAvatar}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-medium hover:opacity-90 transition-all disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 text-xs font-medium hover:bg-sky-400 transition-all disabled:opacity-50 shadow-sm"
                 >
                   Change Photo
                 </button>
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                     type="button"
                     onClick={handleDeleteAvatar}
                     disabled={uploadingAvatar}
-                    className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs font-medium transition-colors"
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors"
                   >
                     Remove
                   </button>
@@ -176,15 +176,15 @@ export default function ProfilePage() {
           </div>
 
           {/* Profile Details Form */}
-          <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6">
-            <h2 className="text-xl font-semibold text-white mb-6">Personal Information</h2>
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-slate-950 mb-6">Personal Information</h2>
             <form onSubmit={handleSaveProfile} className="space-y-4">
               {msg && (
                 <div
                   className={`p-3.5 rounded-xl text-sm flex items-center gap-2 ${
                     msg.type === "success"
-                      ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-                      : "bg-red-500/10 border border-red-500/20 text-red-400"
+                      ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                      : "bg-red-50 border border-red-200 text-red-700"
                   }`}
                 >
                   {msg.text}
@@ -193,46 +193,46 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Display Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition-all"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+855 12 345 678"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Position / Title</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Position / Title</label>
                   <input
                     type="text"
                     value={position}
                     onChange={(e) => setPosition(e.target.value)}
                     placeholder="Software Engineer"
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition-all"
                   />
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function ProfilePage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:opacity-90 disabled:opacity-50 transition-all shadow-lg shadow-indigo-500/20"
+                  className="px-6 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-medium hover:bg-sky-400 disabled:opacity-50 transition-all shadow-sm"
                 >
                   {saving ? "Saving Changes..." : "Save Profile"}
                 </button>
@@ -250,15 +250,15 @@ export default function ProfilePage() {
           </div>
 
           {/* Change Password Form */}
-          <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6">
-            <h2 className="text-xl font-semibold text-white mb-6">Security & Password</h2>
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-slate-950 mb-6">Security & Password</h2>
             <form onSubmit={handleChangePassword} className="space-y-4">
               {pwdMsg && (
                 <div
                   className={`p-3.5 rounded-xl text-sm ${
                     pwdMsg.type === "success"
-                      ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-                      : "bg-red-500/10 border border-red-500/20 text-red-400"
+                      ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
+                      : "bg-red-50 border border-red-200 text-red-700"
                   }`}
                 >
                   {pwdMsg.text}
@@ -267,25 +267,25 @@ export default function ProfilePage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">New Password</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Confirm New Password</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Confirm New Password</label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 transition-all"
                   />
                 </div>
               </div>
@@ -293,7 +293,7 @@ export default function ProfilePage() {
               <div className="flex justify-end pt-2">
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl border border-white/20 text-white font-medium hover:bg-white/10 transition-colors"
+                  className="px-6 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-950 font-medium hover:bg-slate-50 transition-colors shadow-sm"
                 >
                   Update Password
                 </button>
@@ -305,36 +305,36 @@ export default function ProfilePage() {
         {/* Sidebar Column */}
         <div className="space-y-6">
           {/* Account Overview */}
-          <div className="rounded-2xl bg-gradient-to-br from-indigo-600/40 to-purple-600/40 backdrop-blur-xl border border-white/10 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Account Information</h3>
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-slate-950 mb-4">Account Information</h3>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <span className="text-gray-300">User ID</span>
-                <span className="font-mono text-white">#{user?.id}</span>
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                <span className="text-slate-500">User ID</span>
+                <span className="font-mono text-slate-950 font-semibold">#{user?.id}</span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <span className="text-gray-300">Role Type</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/30 text-indigo-300 font-bold text-xs">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                <span className="text-slate-500">Role Type</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 font-bold text-xs">
                   {user?.type}
                 </span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <span className="text-gray-300">Status</span>
-                <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
+              <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                <span className="text-slate-500">Status</span>
+                <span className="text-emerald-700 font-semibold flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" /> Active
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-300">Email Verification</span>
-                <span className="text-indigo-300 font-medium">Verified</span>
+                <span className="text-slate-500">Email Verification</span>
+                <span className="text-sky-700 font-medium">Verified</span>
               </div>
             </div>
           </div>
 
           {/* Capabilities */}
-          <div className="rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Account Privileges</h3>
-            <ul className="space-y-2.5 text-sm">
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-slate-950 mb-4">Account Privileges</h3>
+            <ul className="space-y-3 text-sm">
               {[
                 { label: "Dashboard Access", allowed: true },
                 { label: "Manage Own Posts", allowed: isAdmin() || user?.type === "AUTHOR" },
@@ -344,13 +344,13 @@ export default function ProfilePage() {
               ].map((item) => (
                 <li key={item.label} className="flex items-center gap-2.5">
                   <div
-                    className={`h-4 w-4 rounded-full flex items-center justify-center shrink-0 ${
-                      item.allowed ? "bg-emerald-500/20 text-emerald-400" : "bg-gray-500/20 text-gray-500"
+                    className={`h-5 w-5 rounded-full flex items-center justify-center shrink-0 text-xs font-bold ${
+                      item.allowed ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-400"
                     }`}
                   >
                     {item.allowed ? "✓" : "✕"}
                   </div>
-                  <span className={item.allowed ? "text-gray-300" : "text-gray-500"}>{item.label}</span>
+                  <span className={item.allowed ? "text-slate-800 font-medium" : "text-slate-400"}>{item.label}</span>
                 </li>
               ))}
             </ul>
