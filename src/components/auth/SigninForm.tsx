@@ -26,14 +26,14 @@ export default function SigninForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
       {/* Glass morphism card */}
       <div className="w-full max-w-md">
-        {/* Decorative gradient blur */}
+        {/* Decorative background blur */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full filter blur-3xl animate-pulse" />
           <div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full filter blur-3xl animate-pulse"
             style={{ animationDelay: "2s" }}
           />
         </div>
@@ -44,7 +44,7 @@ export default function SigninForm() {
         >
           {/* Error Message */}
           {error && (
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm">
               <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -54,9 +54,9 @@ export default function SigninForm() {
 
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-linear-to-r from-indigo-500 to-purple-600 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-black mb-4">
               <svg
-                className="w-8 h-8 text-white"
+                className="w-8 h-8 text-black"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -70,14 +70,14 @@ export default function SigninForm() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
-            <p className="text-gray-300">Sign in to continue your journey</p>
+            <p className="text-white/80">Sign in to continue your journey</p>
           </div>
 
           {/* Email Field */}
           <div className="space-y-2">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-200"
+              className="block text-sm font-medium text-white/90"
             >
               Email Address
             </label>
@@ -90,7 +90,7 @@ export default function SigninForm() {
                 name="email"
                 type="email"
                 placeholder="john@example.com"
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
           </div>
@@ -100,13 +100,13 @@ export default function SigninForm() {
             <div className="flex justify-between items-center">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-200"
+                className="block text-sm font-medium text-white/90"
               >
                 Password
               </label>
               <a
                 href="/forgot-password"
-                className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                className="text-sm text-white/80 hover:text-white transition-colors"
               >
                 Forgot password?
               </a>
@@ -120,7 +120,7 @@ export default function SigninForm() {
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
           </div>
@@ -131,9 +131,9 @@ export default function SigninForm() {
               id="remember"
               name="remember"
               type="checkbox"
-              className="w-4 h-4 rounded border-white/20 bg-white/5 text-purple-600 focus:ring-purple-500 focus:ring-offset-0"
+              className="w-4 h-4 rounded border-white/20 bg-white/5 text-black focus:ring-white/50 focus:ring-offset-0"
             />
-            <label htmlFor="remember" className="ml-2 text-sm text-gray-300">
+            <label htmlFor="remember" className="ml-2 text-sm text-white/80">
               Remember me for 30 days
             </label>
           </div>
@@ -142,12 +142,12 @@ export default function SigninForm() {
           <button
             disabled={isPending}
             type="submit"
-            className="relative w-full py-4 px-6 rounded-xl font-semibold text-white overflow-hidden group disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300"
+            className="relative w-full py-4 px-6 rounded-xl font-semibold text-black overflow-hidden group disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300"
           >
-            {/* Gradient background */}
-            <div className="absolute inset-0 bg-linear-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-[length:200%_100%] group-hover:animate-shimmer transition-all" />
+            {/* Button background */}
+            <div className="absolute inset-0 bg-white text-black transition-all" />
             {/* Glow effect */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-indigo-600/50 via-purple-600/50 to-indigo-600/50 blur-xl" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20" />
             {/* Button content */}
             <span className="relative flex items-center justify-center gap-2">
               {isPending && <SpinnerIcon />}
@@ -161,7 +161,7 @@ export default function SigninForm() {
               <div className="w-full border-t border-white/10"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-transparent text-gray-400">
+              <span className="px-4 bg-transparent text-white/60">
                 or continue with
               </span>
             </div>
@@ -205,11 +205,11 @@ export default function SigninForm() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-gray-400 text-sm">
+          <p className="text-center text-white/60 text-sm">
             Don't have an account?{" "}
             <a
               href="/auth/register"
-              className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+              className="text-white/80 hover:text-white font-medium transition-colors"
             >
               Create account
             </a>
@@ -217,18 +217,18 @@ export default function SigninForm() {
         </form>
 
         {/* Terms */}
-        <p className="text-center text-gray-500 text-xs mt-6">
+        <p className="text-center text-white/40 text-xs mt-6">
           By signing in, you agree to our{" "}
           <a
             href="#"
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-white/60 hover:text-white transition-colors"
           >
             Terms of Service
           </a>{" "}
           and{" "}
           <a
             href="#"
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-white/60 hover:text-white transition-colors"
           >
             Privacy Policy
           </a>
@@ -237,4 +237,3 @@ export default function SigninForm() {
     </div>
   );
 }
-

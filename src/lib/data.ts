@@ -15,7 +15,7 @@ const teams = [
       { name: "Mike Johnson", role: "Frontend Developer", avatar: "MJ" },
       { name: "Emma Wilson", role: "DevOps Engineer", avatar: "EW" },
     ],
-    color: "from-indigo-500 to-purple-600",
+    color: "bg-white text-black",
   },
   {
     name: "Design",
@@ -25,7 +25,7 @@ const teams = [
       { name: "Tom Brown", role: "UI Designer", avatar: "TB" },
       { name: "Anna Lee", role: "UX Researcher", avatar: "AL" },
     ],
-    color: "from-pink-500 to-rose-600",
+    color: "bg-white text-black",
   },
   {
     name: "Marketing",
@@ -36,7 +36,7 @@ const teams = [
       { name: "Chris Evans", role: "SEO Specialist", avatar: "CE" },
       { name: "Nina Patel", role: "Social Media", avatar: "NP" },
     ],
-    color: "from-orange-500 to-amber-600",
+    color: "bg-white text-black",
   },
   {
     name: "Product",
@@ -45,7 +45,7 @@ const teams = [
       { name: "James Wilson", role: "Product Manager", avatar: "JW" },
       { name: "Kate Thompson", role: "Product Analyst", avatar: "KT" },
     ],
-    color: "from-emerald-500 to-teal-600",
+    color: "bg-white text-black",
   },
 ];
 const projects = [
@@ -53,7 +53,7 @@ const projects = [
     name: "E-Commerce Platform",
     description: "Modern online shopping experience with real-time inventory",
     status: "In Progress",
-    statusColor: "bg-yellow-500",
+    statusColor: "bg-white text-black",
     progress: 68,
     team: ["AC", "SK", "MJ"],
     deadline: "Mar 15, 2026",
@@ -63,7 +63,7 @@ const projects = [
     name: "Mobile App Redesign",
     description: "Complete UI/UX overhaul for iOS and Android apps",
     status: "Planning",
-    statusColor: "bg-blue-500",
+    statusColor: "bg-white text-black",
     progress: 25,
     team: ["LP", "TB", "AL"],
     deadline: "Apr 20, 2026",
@@ -73,7 +73,7 @@ const projects = [
     name: "API Integration Hub",
     description: "Centralized API gateway with documentation",
     status: "In Progress",
-    statusColor: "bg-yellow-500",
+    statusColor: "bg-white text-black",
     progress: 82,
     team: ["EW", "SK"],
     deadline: "Feb 28, 2026",
@@ -83,7 +83,7 @@ const projects = [
     name: "Analytics Dashboard",
     description: "Real-time metrics and reporting system",
     status: "Completed",
-    statusColor: "bg-emerald-500",
+    statusColor: "bg-white text-black",
     progress: 100,
     team: ["MJ", "AC", "KT"],
     deadline: "Jan 31, 2026",
@@ -93,7 +93,7 @@ const projects = [
     name: "Customer Portal",
     description: "Self-service portal for customer management",
     status: "On Hold",
-    statusColor: "bg-gray-500",
+    statusColor: "bg-white text-black",
     progress: 45,
     team: ["JW", "TB"],
     deadline: "May 10, 2026",
@@ -103,7 +103,7 @@ const projects = [
     name: "Security Audit",
     description: "Comprehensive security review and implementation",
     status: "In Progress",
-    statusColor: "bg-yellow-500",
+    statusColor: "bg-white text-black",
     progress: 55,
     team: ["EW"],
     deadline: "Feb 15, 2026",
@@ -111,12 +111,12 @@ const projects = [
   },
 ];
 const events = [
-  { day: 2, title: "Team Standup", time: "9:00 AM", color: "bg-indigo-500" },
-  { day: 5, title: "Project Review", time: "2:00 PM", color: "bg-purple-500" },
-  { day: 8, title: "Client Meeting", time: "11:00 AM", color: "bg-emerald-500" },
-  { day: 12, title: "Sprint Planning", time: "10:00 AM", color: "bg-orange-500" },
-  { day: 15, title: "Design Review", time: "3:00 PM", color: "bg-pink-500" },
-  { day: 20, title: "Team Building", time: "6:00 PM", color: "bg-teal-500" },
+  { day: 2, title: "Team Standup", time: "9:00 AM", color: "bg-white text-black" },
+  { day: 5, title: "Project Review", time: "2:00 PM", color: "bg-white text-black" },
+  { day: 8, title: "Client Meeting", time: "11:00 AM", color: "bg-white text-black" },
+  { day: 12, title: "Sprint Planning", time: "10:00 AM", color: "bg-white text-black" },
+  { day: 15, title: "Design Review", time: "3:00 PM", color: "bg-white text-black" },
+  { day: 20, title: "Team Building", time: "6:00 PM", color: "bg-white text-black" },
 ];
 const stats = [
   { label: "Total Visitors", value: "45,678", change: "+12.5%", up: true },
@@ -134,16 +134,16 @@ const topPages = [
 ];
 
 const trafficSources = [
-  { source: "Direct", visitors: "15,432", percentage: 35, color: "bg-indigo-500" },
-  { source: "Organic Search", visitors: "12,234", percentage: 28, color: "bg-purple-500" },
-  { source: "Social Media", visitors: "8,567", percentage: 19, color: "bg-pink-500" },
-  { source: "Referral", visitors: "5,678", percentage: 13, color: "bg-orange-500" },
-  { source: "Email", visitors: "2,345", percentage: 5, color: "bg-emerald-500" },
+  { source: "Direct", visitors: "15,432", percentage: 35, color: "bg-white text-black" },
+  { source: "Organic Search", visitors: "12,234", percentage: 28, color: "bg-white text-black" },
+  { source: "Social Media", visitors: "8,567", percentage: 19, color: "bg-white text-black" },
+  { source: "Referral", visitors: "5,678", percentage: 13, color: "bg-white text-black" },
+  { source: "Email", visitors: "2,345", percentage: 5, color: "bg-white text-black" },
 ];
 const projectsData = [
-    { name: "Website Redesign", progress: 75, color: "from-indigo-500 to-purple-600" },
-    { name: "Mobile App", progress: 45, color: "from-emerald-500 to-teal-600" },
-    { name: "API Integration", progress: 90, color: "from-orange-500 to-red-600" },
+    { name: "Website Redesign", progress: 75, color: "bg-white text-black" },
+    { name: "Mobile App", progress: 45, color: "bg-white text-black" },
+    { name: "API Integration", progress: 90, color: "bg-white text-black" },
 ];
 const blogs = [
   {
@@ -156,7 +156,7 @@ const blogs = [
     date: "Feb 8, 2026",
     readTime: "8 min read",
     category: "React",
-    categoryColor: "from-cyan-500 to-blue-600",
+    categoryColor: "bg-white text-black",
     image:
       "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&h=400&fit=crop",
     featured: true,
@@ -171,7 +171,7 @@ const blogs = [
     date: "Feb 6, 2026",
     readTime: "6 min read",
     category: "TypeScript",
-    categoryColor: "from-blue-500 to-indigo-600",
+    categoryColor: "bg-white text-black",
     image:
       "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=600&h=400&fit=crop",
   },
@@ -185,7 +185,7 @@ const blogs = [
     date: "Feb 4, 2026",
     readTime: "5 min read",
     category: "CSS",
-    categoryColor: "from-teal-500 to-emerald-600",
+    categoryColor: "bg-white text-black",
     image:
       "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=600&h=400&fit=crop",
   },
@@ -199,7 +199,7 @@ const blogs = [
     date: "Feb 2, 2026",
     readTime: "7 min read",
     category: "Backend",
-    categoryColor: "from-orange-500 to-red-600",
+    categoryColor: "bg-white text-black",
     image:
       "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop",
   },
@@ -213,7 +213,7 @@ const blogs = [
     date: "Jan 30, 2026",
     readTime: "10 min read",
     category: "Trends",
-    categoryColor: "from-purple-500 to-pink-600",
+    categoryColor: "bg-white text-black",
     image:
       "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop",
   },
@@ -227,7 +227,7 @@ const blogs = [
     date: "Jan 28, 2026",
     readTime: "9 min read",
     category: "DevOps",
-    categoryColor: "from-amber-500 to-orange-600",
+    categoryColor: "bg-white text-black",
     image:
       "https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?w=600&h=400&fit=crop",
   },

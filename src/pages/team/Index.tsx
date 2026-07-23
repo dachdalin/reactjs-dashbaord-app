@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { usersApi, type UserResponse } from "../../lib/api";
+import SendNotificationModal from "../../components/notifications/SendNotificationModal";
 
 // ── User Modal ────────────────────────────────────────────
 interface UserModalProps {
@@ -38,55 +39,55 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-white/10 shadow-2xl">
+      <div className="w-full max-w-lg rounded-2xl bg-black border border-white/10 shadow-2xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
           <h2 className="text-xl font-bold text-white">{editUser ? "Edit User" : "Create User"}</h2>
-          <button onClick={onClose} className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
+          <button onClick={onClose} className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors">
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
         <form onSubmit={handleSave} className="p-6 space-y-4">
-          {error && <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}
+          {error && <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm">{error}</div>}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Name *</label>
+              <label className="block text-sm font-medium text-white/80 mb-1.5">Name *</label>
               <input value={name} onChange={(e) => setName(e.target.value)} required
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
                 placeholder="Full name" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Email *</label>
+              <label className="block text-sm font-medium text-white/80 mb-1.5">Email *</label>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
                 placeholder="email@example.com" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">{editUser ? "New Password (leave blank to keep)" : "Password *"}</label>
+            <label className="block text-sm font-medium text-white/80 mb-1.5">{editUser ? "New Password (leave blank to keep)" : "Password *"}</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
               placeholder="••••••••" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Phone</label>
+              <label className="block text-sm font-medium text-white/80 mb-1.5">Phone</label>
               <input value={phone} onChange={(e) => setPhone(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
                 placeholder="+1 234 567 890" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Position</label>
+              <label className="block text-sm font-medium text-white/80 mb-1.5">Position</label>
               <input value={position} onChange={(e) => setPosition(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
                 placeholder="e.g. Developer" />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Role</label>
+            <label className="block text-sm font-medium text-white/80 mb-1.5">Role</label>
             <select value={type} onChange={(e) => setType(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+              className="w-full px-4 py-3 rounded-xl bg-black border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-white/50">
               <option value="USER">USER</option>
               <option value="AUTHOR">AUTHOR</option>
               <option value="ADMIN">ADMIN</option>
@@ -94,7 +95,7 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-xl border border-white/20 text-white hover:bg-white/10 transition-colors">Cancel</button>
-            <button type="submit" disabled={saving} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
+            <button type="submit" disabled={saving} className="px-5 py-2.5 rounded-xl bg-white text-black font-medium hover:opacity-90 disabled:opacity-50 transition-opacity">
               {saving ? "Saving..." : editUser ? "Update User" : "Create User"}
             </button>
           </div>
@@ -106,9 +107,9 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
 
 // ── Role badge helpers ────────────────────────────────────
 const ROLE_COLORS: Record<string, string> = {
-  ADMIN: "bg-red-500/20 text-red-400 border-red-500/30",
-  AUTHOR: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  USER: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  ADMIN: "bg-white/20 text-white border-white/30",
+  AUTHOR: "bg-white/20 text-white border-white/30",
+  USER: "bg-white/20 text-white border-white/30",
 };
 
 // ── Main Teams/Users Page ─────────────────────────────────
@@ -120,6 +121,7 @@ export default function Teams() {
   const [showModal, setShowModal] = useState(false);
   const [editUser, setEditUser] = useState<UserResponse | undefined>(undefined);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
+  const [notifModalUser, setNotifModalUser] = useState<{ show: boolean; userId?: number }>({ show: false });
 
   async function loadUsers() {
     setLoading(true);
@@ -161,13 +163,13 @@ export default function Teams() {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-white">Team</h1>
-          <p className="text-gray-400 mt-1">User management is restricted to administrators.</p>
+          <p className="text-white/60 mt-1">User management is restricted to administrators.</p>
         </div>
         <div className="rounded-2xl bg-white/5 border border-white/10 p-12 flex flex-col items-center justify-center text-center">
-          <svg className="h-16 w-16 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-16 w-16 text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <p className="text-gray-400 text-lg font-medium">Admin access required</p>
+          <p className="text-white/60 text-lg font-medium">Admin access required</p>
         </div>
       </div>
     );
@@ -179,21 +181,32 @@ export default function Teams() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white">Users</h1>
-          <p className="text-gray-400 mt-1">Manage all registered users — {users.length} total.</p>
+          <p className="text-white/60 mt-1">Manage all registered users — {users.length} total.</p>
         </div>
-        <button
-          onClick={() => { setEditUser(undefined); setShowModal(true); }}
-          className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-indigo-500/30"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add User
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setNotifModalUser({ show: true })}
+            className="px-4 py-2.5 rounded-xl bg-white text-black text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-black/20"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            Push Notification
+          </button>
+          <button
+            onClick={() => { setEditUser(undefined); setShowModal(true); }}
+            className="px-4 py-2.5 rounded-xl bg-white text-black text-sm font-medium flex items-center gap-2 hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-black/30"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add User
+          </button>
+        </div>
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="p-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm">
           {error}
           <button onClick={() => setError(null)} className="ml-2 underline">Dismiss</button>
         </div>
@@ -208,7 +221,7 @@ export default function Teams() {
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{grouped[role]?.length ?? 0}</p>
-              <p className="text-xs text-gray-400">{role === "ADMIN" ? "Admins" : role === "AUTHOR" ? "Authors" : "Users"}</p>
+              <p className="text-xs text-white/60">{role === "ADMIN" ? "Admins" : role === "AUTHOR" ? "Authors" : "Users"}</p>
             </div>
           </div>
         ))}
@@ -223,10 +236,10 @@ export default function Teams() {
         </div>
       ) : users.length === 0 ? (
         <div className="rounded-2xl bg-white/5 border border-white/10 p-12 flex flex-col items-center text-center">
-          <svg className="h-16 w-16 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-16 w-16 text-white/30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <p className="text-gray-400">No users found</p>
+          <p className="text-white/60">No users found</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -236,8 +249,8 @@ export default function Teams() {
               {u.avatar ? (
                 <img src={u.avatar} alt={u.name} className="h-12 w-12 rounded-full object-cover shrink-0" />
               ) : (
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
-                  <span className="text-white font-semibold">{getInitials(u.name)}</span>
+                <div className="h-12 w-12 rounded-full bg-white text-black flex items-center justify-center shrink-0">
+                  <span className="text-black font-semibold">{getInitials(u.name)}</span>
                 </div>
               )}
 
@@ -249,21 +262,30 @@ export default function Teams() {
                     {u.type}
                   </span>
                   {u.emailVerified && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/80 border border-white/20">
                       ✓ Verified
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-400 truncate">{u.email}</p>
-                {u.position && <p className="text-xs text-gray-500 truncate">{u.position}</p>}
+                <p className="text-sm text-white/60 truncate">{u.email}</p>
+                {u.position && <p className="text-xs text-white/40 truncate">{u.position}</p>}
               </div>
 
               {/* Actions */}
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                 <button
+                  onClick={() => setNotifModalUser({ show: true, userId: u.id })}
+                  title={`Send notification to ${u.name}`}
+                  className="p-2 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                  </svg>
+                </button>
+                <button
                   onClick={() => { setEditUser(u); setShowModal(true); }}
                   title="Edit user"
-                  className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -272,7 +294,7 @@ export default function Teams() {
                 <button
                   onClick={() => setDeleteConfirm(u.id)}
                   title="Delete user"
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                  className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -282,6 +304,14 @@ export default function Teams() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Send Notification Modal */}
+      {notifModalUser.show && (
+        <SendNotificationModal
+          defaultUserId={notifModalUser.userId}
+          onClose={() => setNotifModalUser({ show: false })}
+        />
       )}
 
       {/* User Modal */}
@@ -296,12 +326,12 @@ export default function Teams() {
       {/* Delete Confirm */}
       {deleteConfirm !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl bg-slate-900 border border-white/10 p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-sm rounded-2xl bg-black border border-white/10 p-6 shadow-2xl space-y-4">
             <h3 className="text-lg font-bold text-white">Delete User?</h3>
-            <p className="text-gray-400 text-sm">This action cannot be undone.</p>
+            <p className="text-white/60 text-sm">This action cannot be undone.</p>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl border border-white/20 text-white hover:bg-white/10 transition-colors">Cancel</button>
-              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl bg-red-500/80 hover:bg-red-500 text-white transition-colors">Delete</button>
+              <button onClick={() => handleDelete(deleteConfirm)} className="flex-1 py-2.5 rounded-xl bg-white text-black hover:bg-white text-black transition-colors">Delete</button>
             </div>
           </div>
         </div>

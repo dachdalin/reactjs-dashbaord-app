@@ -9,12 +9,12 @@ export default function RootLayout({
     children: React.ReactNode;
     }) {
     return (
-  <div className="flex h-screen bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 w-full">
+  <div className="flex h-screen bg-black w-full">
       {/* Decorative background elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
       </div>
 
       {/* Sidebar - Hidden on mobile, visible on md+ */}
@@ -23,17 +23,17 @@ export default function RootLayout({
       </aside>
 
       {/* Mobile header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-xl border-b border-white/10">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-xl border-b border-white/10">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="h-8 w-8 rounded-lg bg-white text-black flex items-center justify-center">
+              <svg className="h-5 w-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
             <span className="text-white font-semibold">ReactJS App</span>
           </div>
-          <button className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"  title="k">
+          <button className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"  title="k">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>

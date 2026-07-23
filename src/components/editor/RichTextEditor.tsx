@@ -22,8 +22,8 @@ function ToolBtn({
       }}
       className={`p-1.5 rounded-lg text-sm transition-all ${
         active
-          ? "bg-indigo-600 text-white"
-          : "text-gray-300 hover:bg-white/10 hover:text-white"
+          ? "bg-white text-black"
+          : "text-white/80 hover:bg-white/10 hover:text-white"
       }`}
     >
       {children}
@@ -96,7 +96,7 @@ export default function RichTextEditor({
   }
 
   return (
-    <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden focus-within:border-purple-500/50 focus-within:ring-1 focus-within:ring-purple-500/30 transition-all">
+    <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden focus-within:border-white/40 focus-within:ring-1 focus-within:ring-white/20 transition-all">
       {/* ── Toolbar ── */}
       <div className="flex flex-wrap items-center gap-0.5 px-3 py-2 border-b border-white/10 bg-white/3">
         {/* History */}
@@ -214,8 +214,8 @@ export default function RichTextEditor({
 
         <Sep />
 
-        {/* Highlight colours */}
-        {["#6366f1", "#a855f7", "#10b981", "#f59e0b", "#ef4444", "#ffffff"].map((c) => (
+        {/* Text colors */}
+        {["#ffffff", "#000000"].map((c) => (
           <button
             key={c}
             type="button"
@@ -247,7 +247,7 @@ export default function RichTextEditor({
         style={{ minHeight }}
         className={`
           rich-editor
-          px-6 py-5 text-gray-100 text-sm leading-relaxed outline-none
+          px-6 py-5 text-white/90 text-sm leading-relaxed outline-none
           focus:outline-none
         `}
       />
@@ -266,8 +266,8 @@ export default function RichTextEditor({
         .rich-editor ul { list-style: disc; padding-left: 1.5rem; margin: 0.4rem 0; }
         .rich-editor ol { list-style: decimal; padding-left: 1.5rem; margin: 0.4rem 0; }
         .rich-editor li { margin: 0.2rem 0; }
-        .rich-editor a  { color: #818cf8; text-decoration: underline; }
-        .rich-editor blockquote { border-left: 3px solid #6366f1; padding-left: 1rem; color: #9ca3af; margin: 0.5rem 0; }
+        .rich-editor a  { color: #ffffff; text-decoration: underline; }
+        .rich-editor blockquote { border-left: 3px solid #ffffff; padding-left: 1rem; color: #9ca3af; margin: 0.5rem 0; }
         .rich-editor strong { font-weight: 700; }
         .rich-editor em { font-style: italic; }
         .rich-editor u  { text-decoration: underline; }

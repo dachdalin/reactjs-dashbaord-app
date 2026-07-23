@@ -16,11 +16,11 @@ export default function UserProfile() {
     .toUpperCase();
 
   const roleBadgeColor: Record<string, string> = {
-    ADMIN: "bg-red-500",
-    AUTHOR: "bg-purple-500",
-    USER: "bg-emerald-500",
+    ADMIN: "bg-white text-black",
+    AUTHOR: "bg-white text-black",
+    USER: "bg-white text-black",
   };
-  const roleColor = roleBadgeColor[user?.type ?? "USER"] ?? "bg-emerald-500";
+  const roleColor = roleBadgeColor[user?.type ?? "USER"] ?? "bg-white text-black";
 
   return (
     <div className="p-4 border-t border-white/10">
@@ -33,18 +33,18 @@ export default function UserProfile() {
               className="h-10 w-10 rounded-full object-cover"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">{initials}</span>
+            <div className="h-10 w-10 rounded-full bg-white text-black flex items-center justify-center">
+              <span className="text-black font-semibold text-sm">{initials}</span>
             </div>
           )}
-          <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ${roleColor} border-2 border-slate-900`} />
+          <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ${roleColor} border-2 border-black`} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-white truncate">{displayName}</p>
-          <p className="text-xs text-gray-400 truncate">{displayEmail}</p>
+          <p className="text-xs text-white/60 truncate">{displayEmail}</p>
         </div>
         {user?.type && (
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${roleColor} text-white opacity-80`}>
+          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${roleColor} opacity-80`}>
             {user.type}
           </span>
         )}

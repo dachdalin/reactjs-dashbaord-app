@@ -12,11 +12,10 @@ const PAGE_TYPES: PageType[] = [
   "TERMS_AND_CONDITIONS",
 ];
 
-const PAGE_META: Record<PageType, { label: string; desc: string; icon: React.ReactNode; color: string }> = {
+const PAGE_META: Record<PageType, { label: string; desc: string; icon: React.ReactNode }> = {
   ABOUT: {
     label: "About",
     desc: "Who we are and what we do",
-    color: "from-indigo-500 to-blue-600",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -26,7 +25,6 @@ const PAGE_META: Record<PageType, { label: string; desc: string; icon: React.Rea
   CONTACT: {
     label: "Contact",
     desc: "Get in touch with us",
-    color: "from-emerald-500 to-teal-600",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -36,7 +34,6 @@ const PAGE_META: Record<PageType, { label: string; desc: string; icon: React.Rea
   PRIVACY_POLICY: {
     label: "Privacy Policy",
     desc: "How we handle your data",
-    color: "from-purple-500 to-violet-600",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -46,7 +43,6 @@ const PAGE_META: Record<PageType, { label: string; desc: string; icon: React.Rea
   TERMS_AND_CONDITIONS: {
     label: "Terms & Conditions",
     desc: "Rules governing the use of our service",
-    color: "from-orange-500 to-amber-600",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -97,17 +93,17 @@ function EditorPanel({
       {/* Panel header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-white shadow-lg`}>
+          <div className="h-10 w-10 rounded-xl bg-white text-black flex items-center justify-center shadow-lg">
             {meta.icon}
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">{meta.label}</h2>
-            <p className="text-xs text-gray-400">{meta.desc}</p>
+            <p className="text-xs text-white/60">{meta.desc}</p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="p-2 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
           title="Close editor"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,8 +117,8 @@ function EditorPanel({
         <div
           className={`mb-4 px-4 py-3 rounded-xl text-sm flex items-center gap-2 ${
             msg.kind === "success"
-              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
-              : "bg-red-500/10 border border-red-500/20 text-red-400"
+              ? "bg-white/10 text-white border border-white/20 text-white"
+              : "bg-white/10 border border-white/20 text-white"
           }`}
         >
           {msg.kind === "success" ? (
@@ -150,7 +146,7 @@ function EditorPanel({
 
       {/* Footer actions */}
       <div className="flex items-center justify-between pt-4 border-t border-white/10">
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-white/40">
           {page
             ? `Last updated: ${new Date(page.updatedAt).toLocaleString()}`
             : "This page has not been created yet."}
@@ -165,7 +161,7 @@ function EditorPanel({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity shadow-lg shadow-indigo-500/20 flex items-center gap-2"
+            className="px-6 py-2.5 rounded-xl bg-white text-black text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity shadow-lg shadow-black/20 flex items-center gap-2"
           >
             {saving && (
               <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -219,7 +215,7 @@ export default function Pages() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-white">Pages</h1>
-        <p className="text-gray-400 mt-1">
+        <p className="text-white/60 mt-1">
           Manage static content pages for your website.
         </p>
       </div>
@@ -233,40 +229,40 @@ export default function Pages() {
             return (
               <div
                 key={type}
-                className="group relative rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/10 transition-all overflow-hidden cursor-pointer"
+                className="group relative rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/20 transition-all overflow-hidden cursor-pointer"
                 onClick={() => setActiveType(type)}
               >
-                {/* Gradient accent bar */}
-                <div className={`h-1 bg-gradient-to-r ${meta.color}`} />
+                {/* Accent bar */}
+                <div className="h-1 bg-white" />
 
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`h-12 w-12 rounded-xl bg-gradient-to-br ${meta.color} flex items-center justify-center text-white shadow-lg`}>
+                    <div className="h-12 w-12 rounded-xl bg-white text-black flex items-center justify-center shadow-lg">
                       {meta.icon}
                     </div>
                     {/* Status */}
                     {loading ? (
                       <div className="h-6 w-20 rounded-full bg-white/10 animate-pulse" />
                     ) : page ? (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/15 text-white border border-white/20">
                         ✓ Published
                       </span>
                     ) : (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-500/15 text-yellow-400 border border-yellow-500/20">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/70 border border-white/20">
                         Not created
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-indigo-300 transition-colors">
+                  <h3 className="text-lg font-semibold text-white mb-1 group-hover:text-white transition-colors">
                     {meta.label}
                   </h3>
-                  <p className="text-sm text-gray-400">{meta.desc}</p>
+                  <p className="text-sm text-white/60">{meta.desc}</p>
 
                   {/* Preview snippet */}
                   {page && (
                     <div
-                      className="mt-4 text-xs text-gray-500 line-clamp-2 leading-relaxed"
+                      className="mt-4 text-xs text-white/40 line-clamp-2 leading-relaxed"
                       // Strip HTML tags for plain text preview
                       dangerouslySetInnerHTML={{
                         __html: page.content
@@ -281,13 +277,13 @@ export default function Pages() {
                   {/* Footer */}
                   <div className="flex items-center justify-between mt-5 pt-4 border-t border-white/10">
                     {page ? (
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-white/40">
                         Updated {new Date(page.updatedAt).toLocaleDateString()}
                       </span>
                     ) : (
-                      <span className="text-xs text-gray-600">No content yet</span>
+                      <span className="text-xs text-white/30">No content yet</span>
                     )}
-                    <span className="inline-flex items-center gap-1.5 text-sm text-indigo-400 font-medium group-hover:text-indigo-300 transition-colors">
+                    <span className="inline-flex items-center gap-1.5 text-sm text-white/80 font-medium group-hover:text-white transition-colors">
                       {page ? "Edit" : "Create"}
                       <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

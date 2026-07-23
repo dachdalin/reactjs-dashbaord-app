@@ -56,7 +56,7 @@ function NavLinks() {
 
   return (
     <nav className="flex-1 space-y-1 px-3 py-4">
-      <p className="px-3 mb-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+      <p className="px-3 mb-3 text-xs font-semibold text-white/60 uppercase tracking-wider">
         Main Menu
       </p>
       {links.map((link) => {
@@ -69,9 +69,9 @@ function NavLinks() {
             className={clsx(
               "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
               {
-                "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30":
+                "bg-white text-black shadow-lg shadow-black/30":
                   isActive,
-                "text-gray-300 hover:bg-white/10 hover:text-white": !isActive,
+                "text-white/80 hover:bg-white/10 hover:text-white": !isActive,
               },
             )}
           >
@@ -79,13 +79,13 @@ function NavLinks() {
               className={clsx(
                 "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
                 isActive
-                  ? "text-white"
-                  : "text-gray-400 group-hover:text-white",
+                  ? "text-black"
+                  : "text-white/60 group-hover:text-white",
               )}
             />
             <span>{link.name}</span>
             {isActive && (
-              <div className="ml-auto h-2 w-2 rounded-full bg-white animate-pulse" />
+              <div className="ml-auto h-2 w-2 rounded-full bg-black animate-pulse" />
             )}
           </Link>
         );
@@ -109,7 +109,7 @@ function LogoutButton() {
         type="button"
         onClick={handleLogout}
         disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-300 bg-white/5 hover:bg-red-500/20 hover:text-red-400 transition-all duration-200 border border-white/10 hover:border-red-500/30 disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white/80 bg-white/5 hover:bg-white/20 hover:text-white transition-all duration-200 border border-white/10 hover:border-white/30 disabled:opacity-50"
       >
         <ArrowRightEndOnRectangleIcon className="h-5 w-5" />
         {isPending ? "Signing out..." : "Sign Out"}
@@ -120,12 +120,12 @@ function LogoutButton() {
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col bg-linear-to-b from-slate-900 via-slate-900 to-slate-950">
+    <div className="flex h-full flex-col bg-black">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-        <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+        <div className="h-10 w-10 rounded-xl bg-white text-black flex items-center justify-center shadow-lg shadow-black/30">
           <svg
-            className="h-6 w-6 text-white"
+            className="h-6 w-6 text-black"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -140,7 +140,7 @@ export default function SideNav() {
         </div>
         <div>
           <h1 className="text-lg font-bold text-white">ReactJS App</h1>
-          <p className="text-xs text-gray-400">Dashboard v1.0</p>
+          <p className="text-xs text-white/60">Dashboard v1.0</p>
         </div>
       </div>
 

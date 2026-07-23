@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 // Icon components for a polished look
 const UserIcon = () => (
   <svg
-    className="w-5 h-5 text-gray-400"
+    className="w-5 h-5 text-white/60"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -21,7 +21,7 @@ const UserIcon = () => (
 
 const EmailIcon = () => (
   <svg
-    className="w-5 h-5 text-gray-400"
+    className="w-5 h-5 text-white/60"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -37,7 +37,7 @@ const EmailIcon = () => (
 
 const LockIcon = () => (
   <svg
-    className="w-5 h-5 text-gray-400"
+    className="w-5 h-5 text-white/60"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -110,14 +110,14 @@ export function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
       {/* Glass morphism card */}
       <div className="w-full max-w-md">
-        {/* Decorative gradient blur */}
+        {/* Decorative background blur */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" />
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full filter blur-3xl animate-pulse" />
           <div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full filter blur-3xl animate-pulse"
             style={{ animationDelay: "2s" }}
           />
         </div>
@@ -128,9 +128,9 @@ export function SignupForm() {
         >
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-linear-to-r from-indigo-500 to-purple-600 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white text-black mb-4">
               <svg
-                className="w-8 h-8 text-white"
+                className="w-8 h-8 text-black"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -144,20 +144,20 @@ export function SignupForm() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold text-white">Create Account</h2>
-            <p className="text-gray-300">Join us and start your journey</p>
+            <p className="text-white/80">Join us and start your journey</p>
           </div>
 
           {/* Success/Error Message */}
           {success && (
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm">
-              <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/20 text-white border border-white/30 backdrop-blur-sm">
+              <svg className="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-emerald-300 text-sm font-medium">Account created successfully!</p>
+              <p className="text-white text-sm font-medium">Account created successfully!</p>
             </div>
           )}
           {error && (
-            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm">
               <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -169,7 +169,7 @@ export function SignupForm() {
           <div className="space-y-2">
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-200"
+              className="block text-sm font-medium text-white/90"
             >
               Full Name
             </label>
@@ -182,7 +182,7 @@ export function SignupForm() {
                 name="name"
                 type="text"
                 placeholder="John Doe"
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
           </div>
@@ -191,7 +191,7 @@ export function SignupForm() {
           <div className="space-y-2">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-200"
+              className="block text-sm font-medium text-white/90"
             >
               Email Address
             </label>
@@ -204,7 +204,7 @@ export function SignupForm() {
                 name="email"
                 type="email"
                 placeholder="john@example.com"
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
           </div>
@@ -213,7 +213,7 @@ export function SignupForm() {
           <div className="space-y-2">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-200"
+              className="block text-sm font-medium text-white/90"
             >
               Password
             </label>
@@ -226,7 +226,7 @@ export function SignupForm() {
                 name="password"
                 type="password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 hover:bg-white/10"
+                className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 hover:bg-white/10"
               />
             </div>
           </div>
@@ -235,10 +235,10 @@ export function SignupForm() {
           <button
             disabled={isPending}
             type="submit"
-            className="relative w-full py-4 px-6 rounded-xl font-semibold text-white overflow-hidden group disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300"
+            className="relative w-full py-4 px-6 rounded-xl font-semibold text-black overflow-hidden group disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300"
           >
-            <div className="absolute inset-0 bg-linear-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-size-[200%_100%] group-hover:animate-shimmer transition-all" />
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-linear-to-r from-indigo-600/50 via-purple-600/50 to-indigo-600/50 blur-xl" />
+            <div className="absolute inset-0 bg-white text-black transition-all" />
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/20" />
             <span className="relative flex items-center justify-center gap-2">
               {isPending && <SpinnerIcon />}
               {isPending ? "Creating Account..." : "Create Account"}
@@ -246,11 +246,11 @@ export function SignupForm() {
           </button>
 
           {/* Footer */}
-          <p className="text-center text-gray-400 text-sm">
+          <p className="text-center text-white/60 text-sm">
             Already have an account?{" "}
             <a
               href="/auth/login"
-              className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+              className="text-white/80 hover:text-white font-medium transition-colors"
             >
               Sign in
             </a>
@@ -258,18 +258,18 @@ export function SignupForm() {
         </form>
 
         {/* Terms */}
-        <p className="text-center text-gray-500 text-xs mt-6">
+        <p className="text-center text-white/40 text-xs mt-6">
           By signing up, you agree to our{" "}
           <a
             href="#"
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-white/60 hover:text-white transition-colors"
           >
             Terms of Service
           </a>{" "}
           and{" "}
           <a
             href="#"
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-white/60 hover:text-white transition-colors"
           >
             Privacy Policy
           </a>

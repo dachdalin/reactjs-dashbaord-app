@@ -235,6 +235,17 @@ export const notificationsApi = {
     request<NotificationResponse[]>(
       userId ? `/notifications?userId=${userId}` : '/notifications'
     ),
+  create: (body: {
+    title: string;
+    message: string;
+    type: 'SYSTEM' | 'COMMENT' | 'LIKE';
+    userId?: number;
+    isRead?: boolean;
+  }) =>
+    request<NotificationResponse>('/notifications', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
   update: (id: number, body: Partial<NotificationResponse>) =>
     request<NotificationResponse>(`/notifications/${id}`, {
       method: 'PUT',
