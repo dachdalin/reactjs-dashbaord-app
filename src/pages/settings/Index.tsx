@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { settingsApi, type SettingResponse } from "../../lib/api";
 
 const COMMON_SETTING_PRESETS = [
@@ -16,7 +16,7 @@ export default function Settings() {
 
   // App / System settings state
   const [settings, setSettings] = useState<SettingResponse[]>([]);
-  const [settingsLoading, setSettingsLoading] = useState(false);
+  const [settingsLoading, setSettingsLoading] = useState(true);
   const [searchKey, setSearchKey] = useState("");
   const [newKey, setNewKey] = useState("");
   const [newValue, setNewValue] = useState("");
@@ -35,7 +35,11 @@ export default function Settings() {
   }
 
   useEffect(() => {
-    loadSystemSettings();
+    settingsApi
+      .list()
+      .then(setSettings)
+      .catch(() => {})
+      .finally(() => setSettingsLoading(false));
   }, []);
 
   async function handleCreateSetting(k = newKey, v = newValue) {

@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import EmailIcon from "../ui/EmailIcon";
 import LockIcon from "../ui/LockIcon";
 import SpinnerIcon from "../ui/SpinnerIcon";

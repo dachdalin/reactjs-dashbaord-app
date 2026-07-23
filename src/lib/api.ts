@@ -1,5 +1,6 @@
 // ── Base URL ────────────────────────────────────────────
 const BASE_URL = '/api/v1';
+const AUTH_EXPIRED_EVENT = 'auth:expired';
 
 // ── Types ────────────────────────────────────────────────
 export interface ApiError {
@@ -100,7 +101,27 @@ export interface PageResponse {
 
 // ── Helpers ───────────────────────────────────────────────
 function getToken(): string | null {
+  const expiresAt = localStorage.getItem('auth_expires_at');
+  const expiresAtMs = expiresAt ? new Date(expiresAt).getTime() : null;
+  if (expiresAtMs !== null && (!Number.isFinite(expiresAtMs) || Date.now() >= expiresAtMs)) {
+    clearStoredAuth();
+    window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+    return null;
+  }
+
   return localStorage.getItem('auth_token');
+}
+
+export function clearStoredAuth(): void {
+  localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_expires_at');
+  localStorage.removeItem('auth_user');
+  localStorage.removeItem('user');
+}
+
+export function onAuthExpired(callback: () => void): () => void {
+  window.addEventListener(AUTH_EXPIRED_EVENT, callback);
+  return () => window.removeEventListener(AUTH_EXPIRED_EVENT, callback);
 }
 
 async function request<T>(
@@ -123,6 +144,10 @@ async function request<T>(
 
   const data = await res.json();
   if (!res.ok) {
+    if (res.status === 401) {
+      clearStoredAuth();
+      window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+    }
     const err = data as ApiError;
     throw new Error(err.message || `HTTP ${res.status}`);
   }
@@ -142,6 +167,10 @@ async function upload<T>(path: string, formData: FormData): Promise<T> {
 
   const data = await res.json();
   if (!res.ok) {
+    if (res.status === 401) {
+      clearStoredAuth();
+      window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
+    }
     const err = data as ApiError;
     throw new Error(err.message || `HTTP ${res.status}`);
   }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { notificationsApi, type NotificationResponse } from "../lib/api";
 import SendNotificationModal from "./notifications/SendNotificationModal";
 
@@ -67,7 +67,7 @@ export default function Header() {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
   }
 
-  const displayName = user?.name ?? "Guest";
+  const displayName = user?.name ?? "User";
 
   return (
     <>

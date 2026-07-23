@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import UserProfileSkeleton from "./UserProfileSkeleton";
 
 export default function UserProfile() {
@@ -7,8 +7,10 @@ export default function UserProfile() {
 
   if (isLoading) return <UserProfileSkeleton />;
 
-  const displayName = user?.name ?? "Guest User";
-  const displayEmail = user?.email ?? "Not signed in";
+  if (!user) return null;
+
+  const displayName = user.name;
+  const displayEmail = user.email;
   const initials = displayName
     .split(" ")
     .map((w) => w[0])
@@ -38,7 +40,7 @@ export default function UserProfile() {
               className="h-10 w-10 rounded-full object-cover border border-white/20"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-semibold text-sm shadow-md">
+            <div className="h-10 w-10 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center font-semibold text-sm shadow-md">
               {initials}
             </div>
           )}

@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import UserProfile from "./ui/UserProfile";
 import {
   HomeIcon,

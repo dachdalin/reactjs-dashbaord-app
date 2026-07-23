@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { postsApi, usersApi, contactsApi, newslettersApi, type PostResponse } from "../../lib/api";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import StatsCard from "../../components/StatsCard";
 import ActivityCard from "../../components/ActivityCard";
 import ProgressCard from "../../components/ProgressCard";

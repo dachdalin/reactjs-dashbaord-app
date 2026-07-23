@@ -1,34 +1,13 @@
+import { useState, useEffect, useCallback, type ReactNode } from 'react';
 import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from 'react';
-import { authApi, usersApi, type UserResponse, type AuthResponse } from '../lib/api';
-
-// ── Types ────────────────────────────────────────────────
-interface AuthContextValue {
-  user: UserResponse | null;
-  accessToken: string | null;
-  isLoading: boolean;
-  /** true while a login/register/logout call is in-flight */
-  isPending: boolean;
-  isAdmin: () => boolean;
-  isAuthor: () => boolean;
-  /** Returns an error string or null on success */
-  login: (email: string, password: string) => Promise<string | null>;
-  register: (name: string, email: string, password: string, phone?: string) => Promise<string | null>;
-  logout: () => Promise<void>;
-  /** Refresh the stored user profile from the API */
-  refreshUser: () => Promise<void>;
-  /** Update local user state (after a profile save) */
-  setUser: (u: UserResponse) => void;
-}
-
-// ── Context ───────────────────────────────────────────────
-const AuthContext = createContext<AuthContextValue | null>(null);
+  authApi,
+  clearStoredAuth,
+  onAuthExpired,
+  usersApi,
+  type AuthResponse,
+  type UserResponse,
+} from '../lib/api';
+import { AuthContext } from './authContextValue';
 
 // ── Provider ──────────────────────────────────────────────
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -37,19 +16,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, setIsPending] = useState(false);
 
+  const clearAuthState = useCallback(() => {
+    clearStoredAuth();
+    setAccessToken(null);
+    setUserState(null);
+  }, []);
+
   // Rehydrate from localStorage on first mount
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
+    const expiresAt = localStorage.getItem('auth_expires_at');
     const stored = localStorage.getItem('auth_user');
-    if (token && stored) {
-      setAccessToken(token);
-      setUserState(JSON.parse(stored) as UserResponse);
+    const expiresAtMs = expiresAt ? new Date(expiresAt).getTime() : null;
+    const isExpired = expiresAtMs !== null && (!Number.isFinite(expiresAtMs) || Date.now() >= expiresAtMs);
+
+    if (token && stored && expiresAt && !isExpired) {
+      try {
+        setAccessToken(token);
+        setUserState(JSON.parse(stored) as UserResponse);
+      } catch {
+        clearAuthState();
+      }
+    } else if (token || stored) {
+      clearAuthState();
     }
     setIsLoading(false);
-  }, []);
+  }, [clearAuthState]);
+
+  useEffect(() => onAuthExpired(clearAuthState), [clearAuthState]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+
+    const expiresAt = localStorage.getItem('auth_expires_at');
+    if (!expiresAt) {
+      clearAuthState();
+      return;
+    }
+
+    const expiresAtMs = new Date(expiresAt).getTime();
+    if (!Number.isFinite(expiresAtMs)) {
+      clearAuthState();
+      return;
+    }
+
+    const msUntilExpiry = expiresAtMs - Date.now();
+    if (msUntilExpiry <= 0) {
+      clearAuthState();
+      return;
+    }
+
+    const timer = window.setTimeout(clearAuthState, msUntilExpiry);
+    return () => window.clearTimeout(timer);
+  }, [accessToken, clearAuthState]);
 
   const persist = useCallback((res: AuthResponse) => {
     localStorage.setItem('auth_token', res.accessToken);
+    localStorage.setItem('auth_expires_at', res.expiresAt);
     localStorage.setItem('auth_user', JSON.stringify(res.user));
     setAccessToken(res.accessToken);
     setUserState(res.user);
@@ -94,13 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // ignore – clear local state regardless
     } finally {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
-      setAccessToken(null);
-      setUserState(null);
+      clearAuthState();
       setIsPending(false);
     }
-  }, []);
+  }, [clearAuthState]);
 
   const refreshUser = useCallback(async () => {
     if (!user) return;
@@ -140,11 +160,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-// ── Hook ──────────────────────────────────────────────────
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside <AuthProvider>');
-  return ctx;
 }

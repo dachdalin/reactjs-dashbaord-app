@@ -1,27 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { postsApi, tagsApi, type PostResponse, type TagResponse } from "../../lib/api";
+import { useAuth } from "../../context/useAuth";
+import { postsApi, tagsApi, type TagResponse } from "../../lib/api";
 import PostBannerUploader from "../../components/blog/PostBannerUploader";
 
 const POST_TYPES = ["ARTICLE", "NEWS", "TUTORIAL", "CODE"] as const;
-
-const CODE_LANGUAGES = [
-  "javascript",
-  "typescript",
-  "python",
-  "html",
-  "css",
-  "sql",
-  "json",
-  "bash",
-  "java",
-  "cpp",
-  "go",
-  "rust",
-  "php",
-  "csharp",
-];
 
 // ── Section Types (Text, Code & Heading) ──────────────────
 type SectionType = "text" | "code" | "heading";

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 import { usersApi } from "../../lib/api";
 
 export default function ProfilePage() {
@@ -13,7 +13,6 @@ export default function ProfilePage() {
   const [position, setPosition] = useState(user?.position ?? "");
   
   // Password change state
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -96,14 +95,13 @@ export default function ProfilePage() {
       setUser(updated);
       setNewPassword("");
       setConfirmPassword("");
-      setCurrentPassword("");
       setPwdMsg({ type: "success", text: "Password changed successfully!" });
     } catch (err: unknown) {
       setPwdMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to change password." });
     }
   }
 
-  const initials = (name || "Guest")
+  const initials = (name || "User")
     .split(" ")
     .map((w) => w[0])
     .join("")
