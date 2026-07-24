@@ -250,11 +250,11 @@ export default function TagsPage() {
         </button>
       </div>
 
-      {/* Tags Grid */}
+      {/* Tags Table */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-            <div key={n} className="h-28 rounded-2xl bg-white border border-slate-200 animate-pulse p-4" />
+        <div className="rounded-2xl bg-white border border-slate-200 p-4 animate-pulse space-y-3">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <div key={n} className="h-14 rounded-xl bg-slate-100" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -266,54 +266,86 @@ export default function TagsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filtered.map((t) => (
-            <div
-              key={t.id}
-              className="group relative rounded-2xl bg-white border border-slate-200 hover:border-slate-300 transition-all p-5 shadow-sm hover:shadow-md flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-bold font-mono">
-                    #{t.slug}
-                  </span>
-                  {canManage && (
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => {
-                          setEditTag(t);
-                          setShowModal(true);
-                        }}
-                        title="Edit tag"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-slate-950 hover:bg-slate-100 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(t.id)}
-                        title="Delete tag"
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-base font-bold text-slate-950 group-hover:text-sky-700 transition-colors">
-                  {t.title}
-                </h3>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between text-[11px] text-slate-400">
-                <span>ID: #{t.id}</span>
-                <span>{new Date(t.createdAt).toLocaleDateString()}</span>
-              </div>
-            </div>
-          ))}
+        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] border-collapse text-sm">
+              <thead className="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider text-left border-b border-slate-200">
+                <tr>
+                  <th className="px-5 py-4">Tag</th>
+                  <th className="px-4 py-4">Slug</th>
+                  <th className="px-4 py-4">ID</th>
+                  <th className="px-4 py-4">Created Date</th>
+                  <th className="px-4 py-4">Updated Date</th>
+                  <th className="px-5 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {filtered.map((t) => (
+                  <tr key={t.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3.5">
+                        <div className="h-10 w-10 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5.172a2 2 0 011.414.586l6.828 6.828a2 2 0 010 2.828l-6.172 6.172a2 2 0 01-2.828 0L3.586 12.586A2 2 0 013 11.172V6a3 3 0 013-3h1z" />
+                          </svg>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-950 truncate">{t.title}</p>
+                          <p className="text-sm text-slate-500 truncate">#{t.slug}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-800">
+                        {t.slug}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-slate-600">
+                      #{t.id}
+                    </td>
+                    <td className="px-4 py-4 text-xs text-slate-500">
+                      {new Date(t.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-4 text-xs text-slate-500">
+                      {new Date(t.updatedAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      {canManage ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => {
+                              setEditTag(t);
+                              setShowModal(true);
+                            }}
+                            title="Edit tag"
+                            className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-100 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(t.id)}
+                            title="Delete tag"
+                            className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-slate-400 font-medium">Read-Only</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="border-t border-slate-100 bg-slate-50 px-5 py-3 text-xs text-slate-500">
+            Showing {filtered.length} {filtered.length === 1 ? "tag" : "tags"}
+          </div>
         </div>
       )}
 

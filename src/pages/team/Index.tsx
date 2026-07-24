@@ -227,11 +227,11 @@ export default function Teams() {
         ))}
       </div>
 
-      {/* User Grid */}
+      {/* User Table */}
       {loading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {[1, 2, 3, 4].map((n) => (
-            <div key={n} className="rounded-2xl bg-white border border-slate-200 p-6 animate-pulse h-32" />
+        <div className="rounded-2xl bg-white border border-slate-200 p-4 animate-pulse space-y-3">
+          {[1, 2, 3, 4, 5].map((n) => (
+            <div key={n} className="h-14 rounded-xl bg-slate-100" />
           ))}
         </div>
       ) : users.length === 0 ? (
@@ -242,67 +242,96 @@ export default function Teams() {
           <p className="text-slate-500">No users found</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {users.map((u) => (
-            <div key={u.id} className="group rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-200 transition-all p-4 flex items-center gap-4">
-              {/* Avatar */}
-              {u.avatar ? (
-                <img src={u.avatar} alt={u.name} className="h-12 w-12 rounded-full object-cover shrink-0" />
-              ) : (
-                <div className="h-12 w-12 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center shrink-0">
-                  <span className="text-slate-950 font-semibold">{getInitials(u.name)}</span>
-                </div>
-              )}
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-slate-950 font-medium truncate">{u.name}</p>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${ROLE_COLORS[u.type]}`}>
-                    {u.type}
-                  </span>
-                  {u.emailVerified && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-50 text-slate-700 border border-slate-200">
-                      ✓ Verified
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm text-slate-500 truncate">{u.email}</p>
-                {u.position && <p className="text-xs text-slate-500 truncate">{u.position}</p>}
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                <button
-                  onClick={() => setNotifModalUser({ show: true, userId: u.id })}
-                  title={`Send notification to ${u.name}`}
-                  className="p-2 rounded-lg text-slate-700 hover:text-sky-700 hover:bg-slate-50 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => { setEditUser(u); setShowModal(true); }}
-                  title="Edit user"
-                  className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm(u.id)}
-                  title="Delete user"
-                  className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-colors"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[920px] border-collapse text-sm">
+              <thead className="bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider text-left border-b border-slate-200">
+                <tr>
+                  <th className="px-5 py-4">User</th>
+                  <th className="px-4 py-4">Role</th>
+                  <th className="px-4 py-4">Phone</th>
+                  <th className="px-4 py-4">Position</th>
+                  <th className="px-4 py-4">Status</th>
+                  <th className="px-5 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {users.map((u) => (
+                  <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3.5">
+                        {u.avatar ? (
+                          <img src={u.avatar} alt={u.name} className="h-11 w-11 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="h-11 w-11 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                            <span className="font-semibold">{getInitials(u.name)}</span>
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-950 truncate">{u.name}</p>
+                          <p className="text-sm text-slate-500 truncate">{u.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold ${ROLE_COLORS[u.type]}`}>
+                        {u.type}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-slate-600">
+                      {u.phone || "—"}
+                    </td>
+                    <td className="px-4 py-4 text-slate-600">
+                      {u.position || "—"}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+                        u.emailVerified
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                          : "bg-slate-50 text-slate-500 border border-slate-200"
+                      }`}>
+                        {u.emailVerified ? "Verified" : "Unverified"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => setNotifModalUser({ show: true, userId: u.id })}
+                          title={`Send notification to ${u.name}`}
+                          className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => { setEditUser(u); setShowModal(true); }}
+                          title="Edit user"
+                          className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-100 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(u.id)}
+                          title="Delete user"
+                          className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="border-t border-slate-100 bg-slate-50 px-5 py-3 text-xs text-slate-500">
+            Showing {users.length} registered {users.length === 1 ? "user" : "users"}
+          </div>
         </div>
       )}
 
