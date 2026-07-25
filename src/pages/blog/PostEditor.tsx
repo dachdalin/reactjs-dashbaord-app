@@ -116,7 +116,7 @@ export default function PostEditor() {
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const toast = useToast()
+  const { error: toastError, warning: toastWarning } = useToast()
 
   // Post Metadata State
   const [title, setTitle] = useState("");
@@ -141,7 +141,7 @@ export default function PostEditor() {
   // Load Post if editing
   useEffect(() => {
     tagsApi.list().then(setAllTags).catch(() => {
-      toast.warning('Tags unavailable', 'Failed to load tags. Please refresh the page.')
+      toastWarning('Tags unavailable', 'Failed to load tags. Please refresh the page.')
     });
 
     if (isEditing && id) {
@@ -159,11 +159,11 @@ export default function PostEditor() {
           setSections(parseHtmlToSections(post.content));
         })
         .catch((err: unknown) => {
-          toast.error('Failed to load post', err instanceof Error ? err.message : undefined)
+          toastError('Failed to load post', err instanceof Error ? err.message : undefined)
         })
         .finally(() => setLoading(false));
     }
-  }, [id, isEditing, toast]);
+  }, [id, isEditing, toastError, toastWarning]);
 
   // Section Management Handlers
   function addSectionRow(indexAfter?: number, secType: SectionType = "text") {
@@ -228,7 +228,7 @@ export default function PostEditor() {
       setSelectedTagIds((prev) => [...prev, tag.id]);
       setNewTagTitle("");
     } catch (e: unknown) {
-      toast.error('Failed to create tag', e instanceof Error ? e.message : undefined)
+      toastError('Failed to create tag', e instanceof Error ? e.message : undefined)
     }
   }
 
@@ -269,7 +269,7 @@ export default function PostEditor() {
 
       navigate("/blogs");
     } catch (err: unknown) {
-      toast.error('Failed to save post', err instanceof Error ? err.message : undefined)
+      toastError('Failed to save post', err instanceof Error ? err.message : undefined)
     } finally {
       setSaving(false);
     }

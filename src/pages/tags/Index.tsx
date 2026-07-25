@@ -1,37 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../hook/useToast";
 import { tagsApi, type TagResponse } from "../../lib/api";
 
+// ── Tag Modal ─────────────────────────────────────────────
 interface TagModalProps {
   tag?: TagResponse;
   onClose: () => void;
   onSaved: () => void;
+  onSuccess: (msg: string) => void;
+  onError: (title: string, msg?: string) => void;
 }
 
-function TagModal({ tag: editTag, onClose, onSaved }: TagModalProps) {
+function TagModal({ tag: editTag, onClose, onSaved, onSuccess, onError }: TagModalProps) {
   const [title, setTitle] = useState(editTag?.title ?? "");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim()) {
-      setError("Tag title is required.");
+      setValidationError("Tag title is required.");
       return;
     }
 
     setSaving(true);
-    setError(null);
+    setValidationError(null);
     try {
       if (editTag) {
         await tagsApi.update(editTag.id, title.trim());
+        onSuccess(`Tag "${title.trim()}" updated successfully.`);
       } else {
         await tagsApi.create(title.trim());
+        onSuccess(`Tag "${title.trim()}" created successfully.`);
       }
       onSaved();
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to save tag.");
+      onError(
+        editTag ? "Failed to update tag" : "Failed to create tag",
+        err instanceof Error ? err.message : undefined,
+      );
     } finally {
       setSaving(false);
     }
@@ -60,12 +69,13 @@ function TagModal({ tag: editTag, onClose, onSaved }: TagModalProps) {
         </div>
 
         <form onSubmit={handleSave} className="p-6 space-y-4">
-          {error && (
+          {/* Inline validation-only error (required field) */}
+          {validationError && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {error}
+              {validationError}
             </div>
           )}
 
@@ -74,7 +84,7 @@ function TagModal({ tag: editTag, onClose, onSaved }: TagModalProps) {
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => { setTitle(e.target.value); setValidationError(null); }}
               placeholder="e.g. Technology, React, Design"
               required
               className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
@@ -110,42 +120,48 @@ function TagModal({ tag: editTag, onClose, onSaved }: TagModalProps) {
   );
 }
 
+// ── Tags Page ─────────────────────────────────────────────
 export default function TagsPage() {
   const { isAdmin, isAuthor } = useAuth();
+  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast();
+
   const [tags, setTags] = useState<TagResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editTag, setEditTag] = useState<TagResponse | undefined>(undefined);
-  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const canManage = isAdmin() || isAuthor();
 
-  async function loadTags() {
+  const loadTags = useCallback(async () => {
     setLoading(true);
     try {
       const data = await tagsApi.list();
       setTags(data);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to load tags.");
+      toastError("Failed to load tags", err instanceof Error ? err.message : undefined);
     } finally {
       setLoading(false);
     }
-  }
+  }, [toastError]);
 
   useEffect(() => {
     loadTags();
-  }, []);
+  }, [loadTags]);
 
-  async function handleDelete(id: number) {
-    try {
-      await tagsApi.delete(id);
-      setTags((prev) => prev.filter((t) => t.id !== id));
-      setDeleteConfirm(null);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to delete tag.");
-    }
+  function handleDeleteClick(tag: TagResponse) {
+    toastConfirm(
+      `Delete tag "${tag.title}"? This cannot be undone.`,
+      async () => {
+        try {
+          await tagsApi.delete(tag.id);
+          setTags((prev) => prev.filter((t) => t.id !== tag.id));
+          toastSuccess("Tag deleted", `"${tag.title}" has been removed.`);
+        } catch (err: unknown) {
+          toastError("Failed to delete tag", err instanceof Error ? err.message : undefined);
+        }
+      },
+    );
   }
 
   const filtered = tags.filter(
@@ -180,15 +196,6 @@ export default function TagsPage() {
           </button>
         )}
       </div>
-
-      {error && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center justify-between">
-          <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-xs font-semibold underline">
-            Dismiss
-          </button>
-        </div>
-      )}
 
       {/* Stats bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -300,9 +307,7 @@ export default function TagsPage() {
                         {t.slug}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-slate-600">
-                      #{t.id}
-                    </td>
+                    <td className="px-4 py-4 text-slate-600">#{t.id}</td>
                     <td className="px-4 py-4 text-xs text-slate-500">
                       {new Date(t.createdAt).toLocaleDateString()}
                     </td>
@@ -313,10 +318,7 @@ export default function TagsPage() {
                       {canManage ? (
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => {
-                              setEditTag(t);
-                              setShowModal(true);
-                            }}
+                            onClick={() => { setEditTag(t); setShowModal(true); }}
                             title="Edit tag"
                             className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-100 transition-colors"
                           >
@@ -325,7 +327,7 @@ export default function TagsPage() {
                             </svg>
                           </button>
                           <button
-                            onClick={() => setDeleteConfirm(t.id)}
+                            onClick={() => handleDeleteClick(t)}
                             title="Delete tag"
                             className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
                           >
@@ -353,38 +355,11 @@ export default function TagsPage() {
       {showModal && (
         <TagModal
           tag={editTag}
-          onClose={() => {
-            setShowModal(false);
-            setEditTag(undefined);
-          }}
+          onClose={() => { setShowModal(false); setEditTag(undefined); }}
           onSaved={loadTags}
+          onSuccess={(msg) => toastSuccess(msg)}
+          onError={(title, msg) => toastError(title, msg)}
         />
-      )}
-
-      {/* Delete Confirmation */}
-      {deleteConfirm !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-slate-950">Delete Tag?</h3>
-            <p className="text-slate-500 text-sm">
-              Are you sure you want to delete this tag? This action cannot be undone.
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirm)}
-                className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors shadow-sm"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );

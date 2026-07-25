@@ -33,7 +33,7 @@ function formatNumber(value: number): string {
 
 export default function Dashboard() {
   const { isAdmin, isAuthor, user } = useAuth()
-  const toast = useToast()
+  const { error: toastError } = useToast()
   const [stats, setStats] = useState<DashStats>({
     totalPosts: 0,
     totalUsers: null,
@@ -77,7 +77,7 @@ export default function Dashboard() {
             .slice(0, 4)
         )
       } catch (err: unknown) {
-        toast.error(
+        toastError(
           'Failed to load dashboard data',
           err instanceof Error ? err.message : 'Check your connection.',
         )
@@ -87,7 +87,7 @@ export default function Dashboard() {
     }
 
     fetchData()
-  }, [isAdmin, toast])
+  }, [isAdmin, toastError])
 
   const activities = recentPosts.map((post) => ({
     user: post.author?.name ?? 'Unknown',
