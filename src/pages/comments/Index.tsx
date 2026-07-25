@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { contactsApi, notificationsApi, type ContactResponse, type NotificationResponse } from "../../lib/api";
 import SendNotificationModal from "../../components/notifications/SendNotificationModal";
+import { useToast } from "../../hook/useToast";
 
 // ── Helpers ───────────────────────────────────────────────
 function timeAgo(iso: string): string {
@@ -27,12 +28,12 @@ function ContactModal({
   onDelete: (id: number) => void;
   onUpdate: (updated: ContactResponse) => void;
 }) {
+  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast();
   const [editing, setEditing] = useState(false);
   const [subject, setSubject] = useState(contact.subject);
   const [message, setMessage] = useState(contact.message);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
 
   async function handleSave() {
     setSaving(true);
@@ -45,18 +46,31 @@ function ContactModal({
       });
       onUpdate(updated);
       setEditing(false);
-    } catch {/* ignore */}
-    finally { setSaving(false); }
+      toastSuccess("Message updated", `Saved changes for ${contact.name}`);
+    } catch (err: unknown) {
+      toastError("Failed to update message", err instanceof Error ? err.message : undefined);
+    } finally {
+      setSaving(false);
+    }
   }
 
-  async function handleDelete() {
-    setDeleting(true);
-    try {
-      await contactsApi.delete(contact.id);
-      onDelete(contact.id);
-      onClose();
-    } catch {/* ignore */}
-    finally { setDeleting(false); }
+  function handleDeleteClick() {
+    toastConfirm(
+      `Delete message from "${contact.name}"? This action cannot be undone.`,
+      async () => {
+        setDeleting(true);
+        try {
+          await contactsApi.delete(contact.id);
+          onDelete(contact.id);
+          onClose();
+          toastSuccess("Message deleted", `Removed message from ${contact.name}`);
+        } catch (err: unknown) {
+          toastError("Failed to delete message", err instanceof Error ? err.message : undefined);
+        } finally {
+          setDeleting(false);
+        }
+      }
+    );
   }
 
   return (
@@ -129,34 +143,16 @@ function ContactModal({
         <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50">
           {/* Delete */}
           <div>
-            {confirmDelete ? (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-950">Sure?</span>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="px-3 py-1.5 rounded-lg bg-sky-500 text-slate-950 hover:bg-sky-400 text-xs transition-colors disabled:opacity-50"
-                >
-                  {deleting ? "Deleting…" : "Yes, Delete"}
-                </button>
-                <button
-                  onClick={() => setConfirmDelete(false)}
-                  className="px-3 py-1.5 rounded-lg bg-slate-50 text-slate-700 text-xs hover:bg-slate-100 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => setConfirmDelete(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-950 hover:bg-slate-50 border border-slate-200 text-xs transition-colors"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Delete
-              </button>
-            )}
+            <button
+              onClick={handleDeleteClick}
+              disabled={deleting}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-rose-600 hover:bg-rose-50 border border-rose-200 text-xs font-semibold transition-colors disabled:opacity-50"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              {deleting ? "Deleting..." : "Delete"}
+            </button>
           </div>
 
           {/* Edit / Save */}
@@ -215,6 +211,7 @@ function NotificationRow({ n, onMarkRead }: { n: NotificationResponse; onMarkRea
 
 // ── Main Comments Page ────────────────────────────────────
 export default function Comments() {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [contacts, setContacts] = useState<ContactResponse[]>([]);
   const [commentNotifs, setCommentNotifs] = useState<NotificationResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -232,9 +229,12 @@ export default function Comments() {
       ]);
       setContacts(contactsData);
       setCommentNotifs(notifsData.filter((n) => n.type === "COMMENT"));
-    } catch {/* API might not be up */}
-    finally { setLoading(false); }
-  }, []);
+    } catch (err: unknown) {
+      toastError("Failed to load comments", err instanceof Error ? err.message : undefined);
+    } finally {
+      setLoading(false);
+    }
+  }, [toastError]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -251,13 +251,21 @@ export default function Comments() {
     try {
       const updated = await notificationsApi.update(id, { isRead: true });
       setCommentNotifs((prev) => prev.map((n) => (n.id === id ? updated : n)));
-    } catch {/* ignore */}
+      toastSuccess("Notification marked as read");
+    } catch (err: unknown) {
+      toastError("Failed to mark notification as read", err instanceof Error ? err.message : undefined);
+    }
   }
 
   async function handleMarkAllRead() {
     const unread = commentNotifs.filter((n) => !n.isRead);
-    await Promise.allSettled(unread.map((n) => notificationsApi.update(n.id, { isRead: true })));
-    setCommentNotifs((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    try {
+      await Promise.allSettled(unread.map((n) => notificationsApi.update(n.id, { isRead: true })));
+      setCommentNotifs((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      toastSuccess("All notifications marked as read");
+    } catch (err: unknown) {
+      toastError("Failed to mark all as read", err instanceof Error ? err.message : undefined);
+    }
   }
 
   const filtered = contacts.filter((c) => {

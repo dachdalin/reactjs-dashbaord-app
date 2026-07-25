@@ -67,7 +67,9 @@ function NavLinks() {
       </p>
       {links.map((link) => {
         const LinkIcon = link.icon;
-        const isActive = activePath === link.href;
+        const isActive =
+          activePath === link.href ||
+          (link.href !== "/" && activePath.startsWith(`${link.href}/`));
         return (
           <Link
             key={link.name}

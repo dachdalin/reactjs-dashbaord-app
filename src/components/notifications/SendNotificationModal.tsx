@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { notificationsApi, usersApi, type UserResponse, type NotificationResponse } from "../../lib/api";
+import { useToast } from "../../hook/useToast";
 
 interface SendNotificationModalProps {
   defaultUserId?: number;
@@ -25,6 +26,7 @@ export default function SendNotificationModal({
   onClose,
   onSent,
 }: SendNotificationModalProps) {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string>(
@@ -35,7 +37,6 @@ export default function SendNotificationModal({
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
     setLoadingUsers(true);
@@ -61,11 +62,9 @@ export default function SendNotificationModal({
 
     setSending(true);
     setError(null);
-    setSuccessMsg(null);
 
     try {
       if (selectedUserId === "ALL") {
-        // Send to all users or broadcast
         if (users.length > 0) {
           const promises = users.map((u) =>
             notificationsApi.create({
@@ -87,7 +86,7 @@ export default function SendNotificationModal({
           });
           if (onSent) onSent(res);
         }
-        setSuccessMsg("Notification broadcast to all users successfully!");
+        toastSuccess("Notification broadcasted", "Sent to all active users successfully.");
       } else {
         const uId = Number(selectedUserId);
         const res = await notificationsApi.create({
@@ -99,15 +98,12 @@ export default function SendNotificationModal({
         });
         if (onSent) onSent(res);
         const recipientName = users.find((u) => u.id === uId)?.name ?? `User #${uId}`;
-        setSuccessMsg(`Notification sent to ${recipientName} successfully!`);
+        toastSuccess("Notification sent", `Pushed notification to ${recipientName}.`);
       }
 
-      // Reset form or auto close after brief delay
-      setTimeout(() => {
-        onClose();
-      }, 1200);
+      onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to send notification.");
+      toastError("Failed to send notification", err instanceof Error ? err.message : undefined);
     } finally {
       setSending(false);
     }
@@ -154,14 +150,7 @@ export default function SendNotificationModal({
             </div>
           )}
 
-          {successMsg && (
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-sm flex items-center gap-2">
-              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {successMsg}
-            </div>
-          )}
+
 
           {/* Quick Templates */}
           <div>
