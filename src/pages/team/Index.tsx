@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../hook/useToast";
 import { usersApi, type UserResponse } from "../../lib/api";
 import SendNotificationModal from "../../components/notifications/SendNotificationModal";
 
@@ -115,9 +116,9 @@ const ROLE_COLORS: Record<string, string> = {
 // ── Main Teams/Users Page ─────────────────────────────────
 export default function Teams() {
   const { isAdmin } = useAuth();
+  const toast = useToast();
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editUser, setEditUser] = useState<UserResponse | undefined>(undefined);
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
@@ -129,7 +130,7 @@ export default function Teams() {
       const data = await usersApi.list();
       setUsers(data);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load users");
+      toast.error('Failed to load users', e instanceof Error ? e.message : undefined)
     } finally {
       setLoading(false);
     }
@@ -146,7 +147,7 @@ export default function Teams() {
       setUsers((prev) => prev.filter((u) => u.id !== id));
       setDeleteConfirm(null);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to delete user");
+      toast.error('Failed to delete user', e instanceof Error ? e.message : undefined)
     }
   }
 
@@ -205,12 +206,7 @@ export default function Teams() {
         </div>
       </div>
 
-      {error && (
-        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-sm">
-          {error}
-          <button onClick={() => setError(null)} className="ml-2 underline">Dismiss</button>
-        </div>
-      )}
+
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-4">

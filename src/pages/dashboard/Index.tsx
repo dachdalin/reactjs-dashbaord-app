@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { postsApi, usersApi, contactsApi, newslettersApi, type PostResponse } from '../../lib/api'
 import { useAuth } from '../../context/useAuth'
+import { useToast } from '../../hook/useToast'
 import StatsCard from '../../components/StatsCard'
 import ActivityCard from '../../components/ActivityCard'
 
@@ -32,6 +33,7 @@ function formatNumber(value: number): string {
 
 export default function Dashboard() {
   const { isAdmin, isAuthor, user } = useAuth()
+  const toast = useToast()
   const [stats, setStats] = useState<DashStats>({
     totalPosts: 0,
     totalUsers: null,
@@ -74,15 +76,18 @@ export default function Dashboard() {
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 4)
         )
-      } catch {
-        // API might not be running.
+      } catch (err: unknown) {
+        toast.error(
+          'Failed to load dashboard data',
+          err instanceof Error ? err.message : 'Check your connection.',
+        )
       } finally {
         setLoading(false)
       }
     }
 
     fetchData()
-  }, [isAdmin])
+  }, [isAdmin, toast])
 
   const activities = recentPosts.map((post) => ({
     user: post.author?.name ?? 'Unknown',

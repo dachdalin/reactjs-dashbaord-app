@@ -1,26 +1,27 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../hook/useToast";
 import { postsApi, type PostResponse } from "../../lib/api";
 
 export default function Blogs() {
   const navigate = useNavigate();
   const { user, isAdmin, isAuthor } = useAuth();
+  const toast = useToast();
 
   const [posts, setPosts] = useState<PostResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeType, setActiveType] = useState<string>("All");
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
 
   async function loadPosts() {
     setLoading(true);
     try {
       const data = await postsApi.list();
       setPosts(data);
-    } catch {
-      // API may not be available
+    } catch (e: unknown) {
+      toast.error('Failed to load posts', e instanceof Error ? e.message : 'Please refresh.')
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,7 @@ export default function Blogs() {
       setPosts((prev) => prev.filter((p) => p.id !== id));
       setDeleteConfirm(null);
     } catch (e: unknown) {
-      setActionError(e instanceof Error ? e.message : "Failed to delete post");
+      toast.error('Failed to delete post', e instanceof Error ? e.message : undefined)
     }
   }
 
@@ -83,14 +84,7 @@ export default function Blogs() {
         )}
       </div>
 
-      {actionError && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center justify-between shadow-xs">
-          <span>{actionError}</span>
-          <button onClick={() => setActionError(null)} className="text-xs font-bold underline">
-            Dismiss
-          </button>
-        </div>
-      )}
+
 
       {/* ── Filter & Control Panel ── */}
       <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-5">

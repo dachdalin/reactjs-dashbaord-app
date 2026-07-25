@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../hook/useToast";
 import { postsApi, tagsApi, type TagResponse } from "../../lib/api";
 import PostBannerUploader from "../../components/blog/PostBannerUploader";
 
@@ -115,6 +116,7 @@ export default function PostEditor() {
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const toast = useToast()
 
   // Post Metadata State
   const [title, setTitle] = useState("");
@@ -138,7 +140,9 @@ export default function PostEditor() {
 
   // Load Post if editing
   useEffect(() => {
-    tagsApi.list().then(setAllTags).catch(() => {});
+    tagsApi.list().then(setAllTags).catch(() => {
+      toast.warning('Tags unavailable', 'Failed to load tags. Please refresh the page.')
+    });
 
     if (isEditing && id) {
       setLoading(true);
@@ -155,11 +159,11 @@ export default function PostEditor() {
           setSections(parseHtmlToSections(post.content));
         })
         .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : "Failed to load post.");
+          toast.error('Failed to load post', err instanceof Error ? err.message : undefined)
         })
         .finally(() => setLoading(false));
     }
-  }, [id, isEditing]);
+  }, [id, isEditing, toast]);
 
   // Section Management Handlers
   function addSectionRow(indexAfter?: number, secType: SectionType = "text") {
@@ -224,7 +228,7 @@ export default function PostEditor() {
       setSelectedTagIds((prev) => [...prev, tag.id]);
       setNewTagTitle("");
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to create tag.");
+      toast.error('Failed to create tag', e instanceof Error ? e.message : undefined)
     }
   }
 
@@ -265,7 +269,7 @@ export default function PostEditor() {
 
       navigate("/blogs");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to save blog post.");
+      toast.error('Failed to save post', err instanceof Error ? err.message : undefined)
     } finally {
       setSaving(false);
     }
@@ -372,6 +376,7 @@ export default function PostEditor() {
           </button>
         </div>
       )}
+      {/* API errors are shown via the global toast (top-right) */}
 
       {/* ── BANNER UPLOADER COMPONENT ────────────────── */}
       <PostBannerUploader
