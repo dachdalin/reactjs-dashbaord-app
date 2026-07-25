@@ -108,9 +108,9 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
 
 // ── Role badge helpers ────────────────────────────────────
 const ROLE_COLORS: Record<string, string> = {
-  ADMIN: "bg-slate-100 text-slate-950 border-sky-500/30",
-  AUTHOR: "bg-slate-100 text-slate-950 border-sky-500/30",
-  USER: "bg-slate-100 text-slate-950 border-sky-500/30",
+  ADMIN: "bg-rose-500 text-white font-bold shadow-xs",
+  AUTHOR: "bg-indigo-500 text-white font-bold shadow-xs",
+  USER: "bg-emerald-500 text-white font-bold shadow-xs",
 };
 
 // ── Main Teams/Users Page ─────────────────────────────────

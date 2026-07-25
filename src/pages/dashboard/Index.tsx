@@ -142,9 +142,9 @@ export default function Dashboard() {
           title="Total Posts"
           value={loading ? '-' : formatNumber(stats.totalPosts)}
           change={loading ? 'Loading content' : `${stats.publishedPosts} published`}
-          color="bg-sky-100 text-sky-700"
+          color="bg-sky-500 text-white"
           icon={
-            <svg className="h-5 w-5 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
             </svg>
           }
@@ -153,9 +153,9 @@ export default function Dashboard() {
           title="Total Views"
           value={loading ? '-' : formatNumber(stats.totalViews)}
           change="Across all posts"
-          color="bg-emerald-100 text-emerald-700"
+          color="bg-emerald-500 text-white"
           icon={
-            <svg className="h-5 w-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -166,9 +166,9 @@ export default function Dashboard() {
             title="Users"
             value={loading ? '-' : formatNumber(stats.totalUsers ?? 0)}
             change="Registered accounts"
-            color="bg-violet-100 text-violet-700"
+            color="bg-indigo-500 text-white"
             icon={
-              <svg className="h-5 w-5 text-violet-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72M15 11.25a3 3 0 11-6 0 3 3 0 016 0zm6 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM3 18.72a9.094 9.094 0 013.741-.479 3 3 0 014.682-2.72M6.75 11.25a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
               </svg>
             }
@@ -178,9 +178,9 @@ export default function Dashboard() {
           title="Messages"
           value={loading ? '-' : formatNumber(stats.totalContacts)}
           change={`${stats.totalSubscribers} newsletter subscribers`}
-          color="bg-amber-100 text-amber-700"
+          color="bg-amber-500 text-white"
           icon={
-            <svg className="h-5 w-5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0l-7.5-4.615a2.25 2.25 0 01-1.07-1.916V6.75" />
             </svg>
           }

@@ -238,10 +238,10 @@ export default function Blogs() {
 
                     <td className="px-4 py-4">
                       <span
-                        className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium ${
+                        className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold shadow-xs ${
                           post.status
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-                            : "bg-slate-50 text-slate-500 border-slate-200"
+                            ? "bg-emerald-500 text-white"
+                            : "bg-amber-500 text-white"
                         }`}
                       >
                         {post.status ? "Published" : "Draft"}
@@ -250,7 +250,7 @@ export default function Blogs() {
 
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-[11px]">
+                        <div className="h-8 w-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-[11px] shadow-xs">
                           {(post.author?.name ?? "?")
                             .split(" ")
                             .map((w) => w[0])

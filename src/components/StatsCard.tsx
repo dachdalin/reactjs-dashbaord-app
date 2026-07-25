@@ -8,16 +8,16 @@ export function StatsCard({ title, value, change, icon, color }: {
   color: string
 }) {
   return (
-    <div className="rounded-xl bg-white border border-slate-200 p-5 shadow-sm transition-colors hover:border-slate-300">
-      <div className="flex items-start justify-between">
+    <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-xs transition-all hover:shadow-sm">
+      <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">{value}</p>
-          <p className="mt-2 text-sm text-slate-400">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{title}</p>
+          <p className="mt-2 text-3xl font-extrabold tracking-tight text-slate-950">{value}</p>
+          <p className="mt-2 text-xs font-semibold text-slate-500">
             {change}
           </p>
         </div>
-        <div className={`rounded-lg p-3 ${color}`}>
+        <div className={`rounded-xl p-3 shadow-sm shrink-0 ${color}`}>
           {icon}
         </div>
       </div>

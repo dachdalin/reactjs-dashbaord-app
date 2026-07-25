@@ -312,17 +312,17 @@ export default function Comments() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total Messages", value: loading ? "—" : contacts.length, color: "bg-sky-500 text-slate-950", icon: "💬" },
-          { label: "Today", value: loading ? "—" : todayCount, color: "bg-sky-500 text-slate-950", icon: "📅" },
-          { label: "Comment Notifs", value: loading ? "—" : commentNotifs.length, color: "bg-sky-500 text-slate-950", icon: "🔔" },
-          { label: "Unread Notifs", value: loading ? "—" : unreadNotifs, color: "bg-sky-500 text-slate-950", icon: "📌" },
+          { label: "Total Messages", value: loading ? "—" : contacts.length, color: "bg-sky-500 text-white font-bold", icon: "💬" },
+          { label: "Today", value: loading ? "—" : todayCount, color: "bg-emerald-500 text-white font-bold", icon: "📅" },
+          { label: "Comment Notifs", value: loading ? "—" : commentNotifs.length, color: "bg-indigo-500 text-white font-bold", icon: "🔔" },
+          { label: "Unread Notifs", value: loading ? "—" : unreadNotifs, color: "bg-rose-500 text-white font-bold", icon: "📌" },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl bg-white border border-slate-200 p-4 flex items-center gap-3">
-            <div className={`h-10 w-10 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center text-lg shrink-0`}>
+            <div className={`h-10 w-10 rounded-xl flex items-center justify-center text-lg shrink-0 shadow-xs ${s.color}`}>
               {s.icon}
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-950">{s.value}</p>
+              <p className="text-xl font-bold text-slate-950">{s.value}</p>
               <p className="text-xs text-slate-500">{s.label}</p>
             </div>
           </div>
