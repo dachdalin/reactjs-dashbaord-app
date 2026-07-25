@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { postsApi } from "../../lib/api";
+import ImageUploader from "../ui/ImageUploader";
 
 interface PostBannerUploaderProps {
   postId?: number;
@@ -12,36 +13,32 @@ export default function PostBannerUploader({
   imageUrl,
   onImageChange,
 }: PostBannerUploaderProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
   const [urlInput, setUrlInput] = useState(imageUrl ?? "");
   const [showUrlField, setShowUrlField] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Local preview URL
+  const handleUpload = async (file: File, onProgress: (pct: number) => void) => {
+    // Local preview URL as fallback
     const localUrl = URL.createObjectURL(file);
-    onImageChange(localUrl);
-
-    // If post ID exists, upload to API directly
+    // If post ID exists, upload to server directly
     if (postId) {
-      setUploading(true);
       setError(null);
       try {
+        onProgress(30);
         const updated = await postsApi.uploadImage(postId, file);
-        onImageChange(updated.image);
+        onProgress(100);
+        return updated.image ?? localUrl;
       } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Failed to upload banner image.");
-      } finally {
-        setUploading(false);
+        const msg = err instanceof Error ? err.message : "Failed to upload banner image.";
+        setError(msg);
+        throw err;
       }
     }
-  }
+    onProgress(100);
+    return localUrl;
+  };
 
-  async function handleRemoveImage() {
+  const handleRemoveImage = async () => {
     onImageChange(undefined);
     setUrlInput("");
     if (postId) {
@@ -49,15 +46,15 @@ export default function PostBannerUploader({
         await postsApi.deleteImage(postId);
       } catch {/* ignore */}
     }
-  }
+  };
 
-  function handleUrlSubmit(e: React.FormEvent) {
+  const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (urlInput.trim()) {
       onImageChange(urlInput.trim());
       setShowUrlField(false);
     }
-  }
+  };
 
   return (
     <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 space-y-4">
@@ -115,54 +112,13 @@ export default function PostBannerUploader({
         </form>
       )}
 
-      {/* Banner Preview / Upload Area */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        accept="image/*"
-        className="hidden"
+      {/* Global ImageUploader Component */}
+      <ImageUploader
+        value={imageUrl}
+        onChange={onImageChange}
+        onUpload={handleUpload}
+        heightClass="h-48 sm:h-64"
       />
-
-      {imageUrl ? (
-        <div className="relative group h-48 sm:h-64 rounded-xl overflow-hidden border border-slate-200 shadow-inner">
-          <img src={imageUrl} alt="Post Banner" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2 rounded-xl bg-white text-slate-950 text-xs font-bold shadow-lg hover:bg-slate-100 transition-all"
-            >
-              Replace Image
-            </button>
-            <button
-              type="button"
-              onClick={handleRemoveImage}
-              className="px-4 py-2 rounded-xl bg-red-600 text-white text-xs font-bold shadow-lg hover:bg-red-700 transition-all"
-            >
-              Remove
-            </button>
-          </div>
-          {uploading && (
-            <div className="absolute inset-0 bg-slate-950/60 flex items-center justify-center text-white text-xs font-semibold">
-              Uploading Banner...
-            </div>
-          )}
-        </div>
-      ) : (
-        <div
-          onClick={() => fileInputRef.current?.click()}
-          className="h-40 rounded-xl border-2 border-dashed border-slate-300 hover:border-sky-400 bg-slate-50 hover:bg-sky-50/50 transition-all flex flex-col items-center justify-center text-center cursor-pointer p-6 group"
-        >
-          <div className="h-12 w-12 rounded-full bg-white border border-slate-200 group-hover:border-sky-300 flex items-center justify-center text-xl text-slate-500 mb-2 shadow-xs">
-            📤
-          </div>
-          <p className="text-sm font-semibold text-slate-800 group-hover:text-sky-700">
-            Click to upload Banner Image
-          </p>
-          <p className="text-xs text-slate-400 mt-1">SVG, PNG, JPG or WebP (Recommended 1200×630px)</p>
-        </div>
-      )}
     </div>
   );
 }
