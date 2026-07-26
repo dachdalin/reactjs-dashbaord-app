@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { pagesApi, type PageResponse } from "../../lib/api";
 import RichTextEditor from "../../components/editor/RichTextEditor";
+import { useToast } from "../../hook/useToast";
 
 // ── Types ─────────────────────────────────────────────────
 type PageType = PageResponse["type"];
@@ -71,13 +72,18 @@ function EditorPanel({
   onSaved: (saved: PageResponse) => void;
   onClose: () => void;
 }) {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [content, setContent] = useState(page?.content ?? "");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const meta = PAGE_META[type];
 
   async function handleSave() {
-    if (!content.trim()) { setMsg({ kind: "error", text: "Content cannot be empty." }); return; }
+    if (!content.trim()) {
+      setMsg({ kind: "error", text: "Content cannot be empty." });
+      toastError("Validation Error", "Page content cannot be empty.");
+      return;
+    }
     setSaving(true);
     setMsg(null);
     try {
@@ -88,9 +94,11 @@ function EditorPanel({
         saved = await pagesApi.create(type, content);
       }
       setMsg({ kind: "success", text: "Page saved successfully!" });
+      toastSuccess("Page saved", `${meta.label} page content has been saved successfully.`);
       onSaved(saved);
     } catch (e: unknown) {
-      setMsg({ kind: "error", text: e instanceof Error ? e.message : "Failed to save page" });
+      const errorText = e instanceof Error ? e.message : "Failed to save page";
+      toastError("Failed to save page", errorText);
     } finally {
       setSaving(false);
     }
@@ -119,28 +127,6 @@ function EditorPanel({
           </svg>
         </button>
       </div>
-
-      {/* Status message */}
-      {msg && (
-        <div
-          className={`mb-4 px-4 py-3 rounded-xl text-sm flex items-center gap-2 ${
-            msg.kind === "success"
-              ? "bg-slate-50 text-slate-950 border border-slate-200 text-slate-950"
-              : "bg-slate-50 border border-slate-200 text-slate-950"
-          }`}
-        >
-          {msg.kind === "success" ? (
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          ) : (
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          )}
-          {msg.text}
-        </div>
-      )}
 
       {/* Rich Text Editor */}
       <div className="flex-1 mb-5">
@@ -187,23 +173,24 @@ function EditorPanel({
 
 // ── Main Pages Page ───────────────────────────────────────
 export default function Pages() {
+  const { error: toastError } = useToast();
   const [pages, setPages] = useState<PageResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeType, setActiveType] = useState<PageType | null>(null);
 
-  async function loadPages() {
+  const loadPages = useCallback(async () => {
     setLoading(true);
     try {
       const data = await pagesApi.list();
       setPages(data);
-    } catch {
-      // API may not be running yet
+    } catch (err: unknown) {
+      toastError("Failed to load pages", err instanceof Error ? err.message : undefined);
     } finally {
       setLoading(false);
     }
-  }
+  }, [toastError]);
 
-  useEffect(() => { loadPages(); }, []);
+  useEffect(() => { loadPages(); }, [loadPages]);
 
   function getPage(type: PageType) {
     return pages.find((p) => p.type === type);

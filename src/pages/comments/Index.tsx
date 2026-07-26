@@ -453,8 +453,13 @@ export default function Comments() {
                       <button
                         onClick={async (e) => {
                           e.stopPropagation();
-                          await contactsApi.delete(c.id);
-                          setContacts((prev) => prev.filter((x) => x.id !== c.id));
+                          try {
+                            await contactsApi.delete(c.id);
+                            setContacts((prev) => prev.filter((x) => x.id !== c.id));
+                            toastSuccess("Message deleted", `Removed message from ${c.name}`);
+                          } catch (err: unknown) {
+                            toastError("Failed to delete message", err instanceof Error ? err.message : undefined);
+                          }
                         }}
                         title="Delete message"
                         className="p-1.5 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-colors"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
@@ -15,7 +15,7 @@ export default function Blogs() {
   const [activeType, setActiveType] = useState<string>("All");
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
 
-  async function loadPosts() {
+  const loadPosts = useCallback(async () => {
     setLoading(true);
     try {
       const data = await postsApi.list();
@@ -25,11 +25,11 @@ export default function Blogs() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [toast]);
 
   useEffect(() => {
     loadPosts();
-  }, []);
+  }, [loadPosts]);
 
   function canEdit(post: PostResponse): boolean {
     if (isAdmin()) return true;
@@ -42,6 +42,7 @@ export default function Blogs() {
       await postsApi.delete(id);
       setPosts((prev) => prev.filter((p) => p.id !== id));
       setDeleteConfirm(null);
+      toast.success('Post Deleted', 'Article has been deleted successfully.');
     } catch (e: unknown) {
       toast.error('Failed to delete post', e instanceof Error ? e.message : undefined)
     }

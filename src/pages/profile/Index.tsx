@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../hook/useToast";
 import { usersApi } from "../../lib/api";
 
 export default function ProfilePage() {
   const { user, setUser, isAdmin } = useAuth();
+  const { success: toastSuccess, error: toastError } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
@@ -39,8 +41,11 @@ export default function ProfilePage() {
       const updated = await usersApi.update(user.id, { name, email, phone, position });
       setUser(updated);
       setMsg({ type: "success", text: "Profile updated successfully!" });
+      toastSuccess("Profile Updated", "Your profile information has been saved.");
     } catch (err: unknown) {
-      setMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to update profile." });
+      const errMsg = err instanceof Error ? err.message : "Failed to update profile.";
+      setMsg({ type: "error", text: errMsg });
+      toastError("Failed to update profile", errMsg);
     } finally {
       setSaving(false);
     }
@@ -55,8 +60,11 @@ export default function ProfilePage() {
       const updated = await usersApi.uploadAvatar(user.id, file);
       setUser(updated);
       setMsg({ type: "success", text: "Avatar updated successfully!" });
+      toastSuccess("Avatar Updated", "Your profile picture has been updated.");
     } catch (err: unknown) {
-      setMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to upload avatar." });
+      const errMsg = err instanceof Error ? err.message : "Failed to upload avatar.";
+      setMsg({ type: "error", text: errMsg });
+      toastError("Failed to upload avatar", errMsg);
     } finally {
       setUploadingAvatar(false);
     }
@@ -70,8 +78,11 @@ export default function ProfilePage() {
       await usersApi.deleteAvatar(user.id);
       setUser({ ...user, avatar: undefined });
       setMsg({ type: "success", text: "Avatar removed." });
+      toastSuccess("Avatar Removed", "Your profile picture has been removed.");
     } catch (err: unknown) {
-      setMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to remove avatar." });
+      const errMsg = err instanceof Error ? err.message : "Failed to remove avatar.";
+      setMsg({ type: "error", text: errMsg });
+      toastError("Failed to remove avatar", errMsg);
     } finally {
       setUploadingAvatar(false);
     }
@@ -82,10 +93,12 @@ export default function ProfilePage() {
     if (!user) return;
     if (newPassword !== confirmPassword) {
       setPwdMsg({ type: "error", text: "New passwords do not match." });
+      toastError("Validation Error", "New passwords do not match.");
       return;
     }
     if (newPassword.length < 8) {
       setPwdMsg({ type: "error", text: "Password must be at least 8 characters long." });
+      toastError("Validation Error", "Password must be at least 8 characters long.");
       return;
     }
 
@@ -96,8 +109,11 @@ export default function ProfilePage() {
       setNewPassword("");
       setConfirmPassword("");
       setPwdMsg({ type: "success", text: "Password changed successfully!" });
+      toastSuccess("Password Changed", "Your account password has been updated.");
     } catch (err: unknown) {
-      setPwdMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to change password." });
+      const errMsg = err instanceof Error ? err.message : "Failed to change password.";
+      setPwdMsg({ type: "error", text: errMsg });
+      toastError("Failed to change password", errMsg);
     }
   }
 

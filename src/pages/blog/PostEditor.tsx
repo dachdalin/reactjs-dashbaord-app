@@ -113,7 +113,7 @@ export default function PostEditor() {
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { error: toastError, warning: toastWarning } = useToast();
+  const { success: toastSuccess, error: toastError, warning: toastWarning } = useToast();
 
   // Metadata State
   const [title, setTitle] = useState("");
@@ -220,6 +220,7 @@ export default function PostEditor() {
       setAllTags((prev) => [...prev, tag]);
       setSelectedTagIds((prev) => [...prev, tag.id]);
       setNewTagTitle("");
+      toastSuccess("Tag Created", `Tag #${tag.title} created successfully.`);
     } catch (e: unknown) {
       toastError("Failed to create tag", e instanceof Error ? e.message : undefined);
     }
@@ -229,12 +230,14 @@ export default function PostEditor() {
     e.preventDefault();
     if (!title.trim()) {
       setError("Article title is required.");
+      toastError("Validation Error", "Article title is required.");
       return;
     }
 
     const compiledHtml = compileSectionsToHtml(sections);
     if (!compiledHtml.trim()) {
       setError("Please add content to your article sections.");
+      toastError("Validation Error", "Please add content to your article sections.");
       return;
     }
 
@@ -256,8 +259,10 @@ export default function PostEditor() {
 
       if (isEditing && id) {
         await postsApi.update(Number(id), payload);
+        toastSuccess("Post Updated", "The article has been updated successfully.");
       } else {
         await postsApi.create(payload);
+        toastSuccess("Post Published", "The article has been published successfully.");
       }
 
       navigate("/blogs");

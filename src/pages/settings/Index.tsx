@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
+import { useToast } from "../../hook/useToast";
 import { settingsApi, type SettingResponse } from "../../lib/api";
 
 const COMMON_SETTING_PRESETS = [
@@ -13,6 +14,7 @@ const COMMON_SETTING_PRESETS = [
 
 export default function Settings() {
   const { isAdmin } = useAuth();
+  const { success: toastSuccess, error: toastError } = useToast();
 
   // App / System settings state
   const [settings, setSettings] = useState<SettingResponse[]>([]);
@@ -25,26 +27,27 @@ export default function Settings() {
   const [editValue, setEditValue] = useState("");
   const [systemMsg, setSystemMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  function loadSystemSettings() {
+  const loadSystemSettings = useCallback(async () => {
     setSettingsLoading(true);
-    settingsApi
-      .list()
-      .then(setSettings)
-      .catch(() => {})
-      .finally(() => setSettingsLoading(false));
-  }
+    try {
+      const data = await settingsApi.list();
+      setSettings(data);
+    } catch (err: unknown) {
+      toastError("Failed to load settings", err instanceof Error ? err.message : undefined);
+    } finally {
+      setSettingsLoading(false);
+    }
+  }, [toastError]);
 
   useEffect(() => {
-    settingsApi
-      .list()
-      .then(setSettings)
-      .catch(() => {})
-      .finally(() => setSettingsLoading(false));
-  }, []);
+    loadSystemSettings();
+  }, [loadSystemSettings]);
 
   async function handleCreateSetting(k = newKey, v = newValue) {
     if (!k.trim() || !v.trim()) {
-      setSystemMsg({ type: "error", text: "Both Key and Value are required." });
+      const errMsg = "Both Key and Value are required.";
+      setSystemMsg({ type: "error", text: errMsg });
+      toastError("Validation Error", errMsg);
       return;
     }
     setSystemMsg(null);
@@ -54,21 +57,30 @@ export default function Settings() {
       setNewKey("");
       setNewValue("");
       setSystemMsg({ type: "success", text: `Setting '${k}' created successfully.` });
+      toastSuccess("Setting Created", `Setting '${k}' created successfully.`);
     } catch (err: unknown) {
-      setSystemMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to create setting" });
+      const errMsg = err instanceof Error ? err.message : "Failed to create setting";
+      setSystemMsg({ type: "error", text: errMsg });
+      toastError("Failed to create setting", errMsg);
     }
   }
 
   async function handleUpdateSetting(id: number) {
-    if (!editKey.trim() || !editValue.trim()) return;
+    if (!editKey.trim() || !editValue.trim()) {
+      toastError("Validation Error", "Both Key and Value are required.");
+      return;
+    }
     setSystemMsg(null);
     try {
       const s = await settingsApi.update(id, editKey.trim(), editValue.trim());
       setSettings((prev) => prev.map((x) => (x.id === id ? s : x)));
       setEditingId(null);
       setSystemMsg({ type: "success", text: "Setting updated successfully." });
+      toastSuccess("Setting Updated", `Setting '${editKey}' updated successfully.`);
     } catch (err: unknown) {
-      setSystemMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to update setting" });
+      const errMsg = err instanceof Error ? err.message : "Failed to update setting";
+      setSystemMsg({ type: "error", text: errMsg });
+      toastError("Failed to update setting", errMsg);
     }
   }
 
@@ -78,8 +90,11 @@ export default function Settings() {
       await settingsApi.delete(id);
       setSettings((prev) => prev.filter((x) => x.id !== id));
       setSystemMsg({ type: "success", text: "Setting removed successfully." });
+      toastSuccess("Setting Deleted", "System setting removed successfully.");
     } catch (err: unknown) {
-      setSystemMsg({ type: "error", text: err instanceof Error ? err.message : "Failed to delete setting" });
+      const errMsg = err instanceof Error ? err.message : "Failed to delete setting";
+      setSystemMsg({ type: "error", text: errMsg });
+      toastError("Failed to delete setting", errMsg);
     }
   }
 

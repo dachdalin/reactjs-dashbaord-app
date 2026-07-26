@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { usersApi, type UserResponse } from "../../lib/api";
@@ -12,6 +12,7 @@ interface UserModalProps {
 }
 
 function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [name, setName] = useState(editUser?.name ?? "");
   const [email, setEmail] = useState(editUser?.email ?? "");
   const [password, setPassword] = useState("");
@@ -23,18 +24,31 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) { setError("Name and email are required."); return; }
+    if (!name.trim() || !email.trim()) {
+      setError("Name and email are required.");
+      toastError("Validation Error", "Name and email are required.");
+      return;
+    }
     setSaving(true); setError(null);
     try {
       if (editUser) {
         await usersApi.update(editUser.id, { name, email, password: password || undefined, phone, position, type: type as UserResponse["type"] });
+        toastSuccess("User Updated", `User ${name} updated successfully.`);
       } else {
-        if (!password) { setError("Password is required for new users."); setSaving(false); return; }
+        if (!password) {
+          setError("Password is required for new users.");
+          toastError("Validation Error", "Password is required for new users.");
+          setSaving(false);
+          return;
+        }
         await usersApi.create({ name, email, password, phone, position, type: type as UserResponse["type"] });
+        toastSuccess("User Created", `User ${name} created successfully.`);
       }
       onSaved(); onClose();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to save user");
+      const errMsg = e instanceof Error ? e.message : "Failed to save user";
+      setError(errMsg);
+      toastError("Failed to save user", errMsg);
     } finally { setSaving(false); }
   }
 
@@ -124,7 +138,7 @@ export default function Teams() {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [notifModalUser, setNotifModalUser] = useState<{ show: boolean; userId?: number }>({ show: false });
 
-  async function loadUsers() {
+  const loadUsers = useCallback(async () => {
     setLoading(true);
     try {
       const data = await usersApi.list();
@@ -134,18 +148,19 @@ export default function Teams() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [toast]);
 
   useEffect(() => {
     if (isAdmin()) loadUsers();
     else setLoading(false);
-  }, [isAdmin]);
+  }, [isAdmin, loadUsers]);
 
   async function handleDelete(id: number) {
     try {
       await usersApi.delete(id);
       setUsers((prev) => prev.filter((u) => u.id !== id));
       setDeleteConfirm(null);
+      toast.success('User deleted', 'User has been deleted successfully.');
     } catch (e: unknown) {
       toast.error('Failed to delete user', e instanceof Error ? e.message : undefined)
     }
