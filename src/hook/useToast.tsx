@@ -212,29 +212,31 @@ function ConfirmDialog({
     onCancel: () => void;
 }) {
     return (
-        <div className="fixed inset-0 z-99999 flex items-center justify-center">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/40" onClick={onCancel} />
+            <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={onCancel} />
 
             {/* Dialog */}
-            <div className="relative w-full max-w-sm rounded-sm border border-stroke bg-white px-8 py-10 shadow-default dark:border-strokedark dark:bg-boxdark text-center">
-                <span className="mx-auto mb-5.5 flex h-16 w-16 items-center justify-center rounded-full border-2 border-warning">
-                    <svg className="fill-warning" width="28" height="28" viewBox="0 0 28 28">
-                        <path d="M14 2.333C7.557 2.333 2.333 7.557 2.333 14S7.557 25.667 14 25.667 25.667 20.443 25.667 14 20.443 2.333 14 2.333Zm1.167 15.167H12.833V12.833h2.334v4.667Zm0-7H12.833V8.167h2.334V10.5Z" />
+            <div className="relative w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl text-center z-10 animate-in fade-in zoom-in duration-150">
+                <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 border border-amber-200 shadow-sm">
+                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </span>
-                <h3 className="mb-2 text-xl font-bold text-black dark:text-white">Are you sure?</h3>
-                <p className="mb-6 text-body">{message}</p>
+                <h3 className="mb-1 text-lg font-bold text-slate-950">Confirm Action</h3>
+                <p className="mb-6 text-sm text-slate-600 leading-relaxed">{message}</p>
                 <div className="flex gap-3">
                     <button
+                        type="button"
                         onClick={onCancel}
-                        className="btn-cancel flex-1 py-3 font-medium"
+                        className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-700 font-medium text-sm hover:bg-slate-50 transition-colors"
                     >
                         Cancel
                     </button>
                     <button
+                        type="button"
                         onClick={onConfirm}
-                        className="flex-1 rounded bg-danger py-3 font-medium text-white hover:bg-opacity-90"
+                        className="flex-1 py-2.5 rounded-xl bg-sky-500 text-slate-950 font-medium text-sm hover:bg-sky-400 transition-colors shadow-sm"
                     >
                         Confirm
                     </button>

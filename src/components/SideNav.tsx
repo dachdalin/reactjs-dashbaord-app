@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { useAuth } from "../context/useAuth";
+import { useToast } from "../hook/useToast";
 import UserProfile from "./ui/UserProfile";
 import {
   HomeIcon,
@@ -12,43 +13,26 @@ import {
   Cog6ToothIcon,
   ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/outline";
+
 type LinkType = {
   name: string;
   href: string;
-  icon: React.FC<React.SVGProps<SVGSVGElement>>;
+  icon: React.ForwardRefExoticComponent<
+    React.PropsWithoutRef<React.SVGProps<SVGSVGElement>> & {
+      title?: string;
+      titleId?: string;
+    } & React.RefAttributes<SVGSVGElement>
+  >;
+  adminOnly?: boolean;
 };
 
 const links: LinkType[] = [
-  {
-    name: "Dashboard",
-    href: "/dashboard",
-    icon: HomeIcon,
-  },
-  {
-    name: "Users",
-    href: "/teams",
-    icon: UserGroupIcon,
-  },
-  {
-    name: "Blogs",
-    href: "/blogs",
-    icon: DocumentDuplicateIcon,
-  },
-  {
-    name: "Tags",
-    href: "/tags",
-    icon: TagIcon,
-  },
-  {
-    name: "Comments",
-    href: "/comments",
-    icon: ChatBubbleLeftEllipsisIcon,
-  },
-  {
-    name: "Pages",
-    href: "/pages",
-    icon: DocumentTextIcon,
-  },
+  { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Team Users", href: "/team", icon: UserGroupIcon, adminOnly: true },
+  { name: "Pages Manager", href: "/pages", icon: DocumentDuplicateIcon, adminOnly: true },
+  { name: "Blog Posts", href: "/blog", icon: DocumentTextIcon },
+  { name: "Contact & Comments", href: "/comments", icon: ChatBubbleLeftEllipsisIcon },
+  { name: "Tags", href: "/tags", icon: TagIcon },
   {
     name: "Settings",
     href: "/settings",
@@ -58,43 +42,32 @@ const links: LinkType[] = [
 
 function NavLinks() {
   const { pathname } = useLocation();
-  const activePath = pathname;
+  const { isAdmin } = useAuth();
+
+  const visibleLinks = links.filter((link) => !link.adminOnly || isAdmin());
 
   return (
-    <nav className="flex-1 space-y-1 px-3 py-4">
-      <p className="px-3 mb-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-        Main Menu
-      </p>
-      {links.map((link) => {
+    <nav className="flex-1 space-y-1.5 px-4 py-4">
+      {visibleLinks.map((link) => {
         const LinkIcon = link.icon;
-        const isActive =
-          activePath === link.href ||
-          (link.href !== "/" && activePath.startsWith(`${link.href}/`));
+        const isActive = pathname === link.href;
+
         return (
           <Link
             key={link.name}
             to={link.href}
             className={clsx(
-              "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+              "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
               {
-                "bg-sky-500 text-slate-950 shadow-lg shadow-sky-950/30":
+                "bg-sky-500 text-slate-950 font-semibold shadow-lg shadow-sky-950/40":
                   isActive,
-                "text-slate-200 hover:bg-slate-800/70 hover:text-sky-100": !isActive,
-              },
+                "text-slate-400 hover:bg-slate-900/80 hover:text-slate-100":
+                  !isActive,
+              }
             )}
           >
-            <LinkIcon
-              className={clsx(
-                "h-5 w-5 transition-transform duration-200 group-hover:scale-110",
-                isActive
-                  ? "text-slate-950"
-                  : "text-slate-400 group-hover:text-sky-100",
-              )}
-            />
-            <span>{link.name}</span>
-            {isActive && (
-              <div className="ml-auto h-2 w-2 rounded-full bg-slate-950 animate-pulse" />
-            )}
+            <LinkIcon className="h-5 w-5 shrink-0" />
+            <p>{link.name}</p>
           </Link>
         );
       })}
@@ -105,10 +78,13 @@ function NavLinks() {
 function LogoutButton() {
   const { logout, isPending } = useAuth();
   const navigate = useNavigate();
+  const { confirm: toastConfirm } = useToast();
 
-  async function handleLogout() {
-    await logout();
-    navigate("/auth/login", { replace: true });
+  function handleLogout() {
+    toastConfirm("Are you sure you want to sign out of your account?", async () => {
+      await logout();
+      navigate("/auth/login", { replace: true });
+    });
   }
 
   return (

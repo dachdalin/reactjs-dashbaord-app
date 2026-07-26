@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { usersApi } from "../../lib/api";
+import ImageUploader from "../../components/ui/ImageUploader";
 
 export default function ProfilePage() {
   const { user, setUser, isAdmin } = useAuth();
   const { success: toastSuccess, error: toastError } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [name, setName] = useState(user?.name ?? "");
@@ -19,7 +19,6 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [saving, setSaving] = useState(false);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [msg, setMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [pwdMsg, setPwdMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -51,42 +50,34 @@ export default function ProfilePage() {
     }
   }
 
-  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    setUploadingAvatar(true);
-    setMsg(null);
+  const handleAvatarUpload = async (file: File, onProgress: (percent: number) => void) => {
+    if (!user) throw new Error("User not found");
     try {
+      onProgress(30);
       const updated = await usersApi.uploadAvatar(user.id, file);
+      onProgress(100);
       setUser(updated);
-      setMsg({ type: "success", text: "Avatar updated successfully!" });
       toastSuccess("Avatar Updated", "Your profile picture has been updated.");
+      return updated.avatar ?? URL.createObjectURL(file);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Failed to upload avatar.";
-      setMsg({ type: "error", text: errMsg });
       toastError("Failed to upload avatar", errMsg);
-    } finally {
-      setUploadingAvatar(false);
+      throw err;
     }
-  }
+  };
 
-  async function handleDeleteAvatar() {
+  const handleAvatarRemove = async () => {
     if (!user) return;
-    setUploadingAvatar(true);
     setMsg(null);
     try {
       await usersApi.deleteAvatar(user.id);
       setUser({ ...user, avatar: undefined });
-      setMsg({ type: "success", text: "Avatar removed." });
       toastSuccess("Avatar Removed", "Your profile picture has been removed.");
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Failed to remove avatar.";
-      setMsg({ type: "error", text: errMsg });
       toastError("Failed to remove avatar", errMsg);
-    } finally {
-      setUploadingAvatar(false);
     }
-  }
+  };
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
@@ -117,13 +108,6 @@ export default function ProfilePage() {
     }
   }
 
-  const initials = (name || "User")
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -135,58 +119,34 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Column */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Avatar Card */}
-          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
-            <div className="relative group shrink-0">
-              {user?.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="h-24 w-24 rounded-full object-cover border-2 border-sky-400 shadow-md"
-                />
-              ) : (
-                <div className="h-24 w-24 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-md">
-                  {initials}
-                </div>
-              )}
-              {uploadingAvatar && (
-                <div className="absolute inset-0 rounded-full bg-slate-950/70 flex items-center justify-center text-xs text-white">
-                  Uploading...
-                </div>
+          {/* Avatar Card using Global ImageUploader Component */}
+          <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-slate-950">Profile Picture</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Upload or change your profile picture. Drag and drop or click to browse.
+                </p>
+              </div>
+              {user?.avatar && (
+                <button
+                  type="button"
+                  onClick={handleAvatarRemove}
+                  className="px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  Remove Photo
+                </button>
               )}
             </div>
 
-            <div className="space-y-2 text-center sm:text-left">
-              <h3 className="text-xl font-bold text-slate-950">{user?.name}</h3>
-              <p className="text-sm text-slate-500">{user?.email}</p>
-              <div className="flex items-center justify-center sm:justify-start gap-2 pt-1">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleAvatarChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingAvatar}
-                  className="px-4 py-2 rounded-xl bg-sky-500 text-slate-950 text-xs font-medium hover:bg-sky-400 transition-all disabled:opacity-50 shadow-sm"
-                >
-                  Change Photo
-                </button>
-                {user?.avatar && (
-                  <button
-                    type="button"
-                    onClick={handleDeleteAvatar}
-                    disabled={uploadingAvatar}
-                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium transition-colors"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            </div>
+            <ImageUploader
+              value={user?.avatar}
+              onChange={(val) => {
+                if (!val && user?.avatar) handleAvatarRemove();
+              }}
+              onUpload={handleAvatarUpload}
+              heightClass="h-44 sm:h-52"
+            />
           </div>
 
           {/* Profile Details Form */}
