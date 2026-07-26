@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { usersApi, type UserResponse } from "../../lib/api";
@@ -21,14 +21,17 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
   const [type, setType] = useState<string>(editUser?.type ?? "USER");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const isSubmitting = useRef(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (isSubmitting.current) return;
     if (!name.trim() || !email.trim()) {
       setError("Name and email are required.");
       toastError("Validation Error", "Name and email are required.");
       return;
     }
+    isSubmitting.current = true;
     setSaving(true); setError(null);
     try {
       if (editUser) {
@@ -39,6 +42,7 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
           setError("Password is required for new users.");
           toastError("Validation Error", "Password is required for new users.");
           setSaving(false);
+          isSubmitting.current = false;
           return;
         }
         await usersApi.create({ name, email, password, phone, position, type: type as UserResponse["type"] });
@@ -49,7 +53,10 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
       const errMsg = e instanceof Error ? e.message : "Failed to save user";
       setError(errMsg);
       toastError("Failed to save user", errMsg);
-    } finally { setSaving(false); }
+    } finally { 
+      setSaving(false); 
+      isSubmitting.current = false;
+    }
   }
 
   return (

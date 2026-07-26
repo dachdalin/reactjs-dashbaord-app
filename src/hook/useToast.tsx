@@ -38,16 +38,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
     const toast = useCallback((opts: Omit<Toast, 'id'>) => {
         setToasts((prev) => {
-            // Deduplicate: skip if same title+type already visible
-            if (prev.some((t) => t.title === opts.title && t.type === opts.type)) return prev;
+            // Deduplicate: skip if identical toast (same type, title, message) is already visible
+            if (prev.some((t) => t.title === opts.title && t.type === opts.type && t.message === opts.message)) {
+                return prev;
+            }
             // Cap at 3 toasts max (drop oldest)
             const capped = prev.length >= 3 ? prev.slice(-2) : prev;
             const id = Math.random().toString(36).slice(2);
-            const duration = opts.duration ?? 4000;
-            if (duration > 0) setTimeout(() => dismiss(id), duration);
             return [...capped, { ...opts, id }];
         });
-    }, [dismiss]);
+    }, []);
 
     const success = useCallback((title: string, message?: string) => toast({ type: 'success', title, message }), [toast]);
     const error   = useCallback((title: string, message?: string) => toast({ type: 'error',   title, message }), [toast]);
@@ -157,6 +157,17 @@ const TOAST_CONFIG: Record<
 
 function ToastItem({ toast: t, onDismiss }: { toast: Toast; onDismiss: () => void }) {
     const c = TOAST_CONFIG[t.type];
+
+    React.useEffect(() => {
+        const duration = t.duration ?? 4000;
+        if (duration > 0) {
+            const timer = setTimeout(() => {
+                onDismiss();
+            }, duration);
+            return () => clearTimeout(timer);
+        }
+    }, [t.duration, onDismiss]);
+
     return (
         <div
             className={`flex items-start gap-3 rounded-xl shadow-lg px-4 py-3.5 pointer-events-auto ${c.bg}`}

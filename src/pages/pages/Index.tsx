@@ -75,17 +75,14 @@ function EditorPanel({
   const { success: toastSuccess, error: toastError } = useToast();
   const [content, setContent] = useState(page?.content ?? "");
   const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState<{ kind: "success" | "error"; text: string } | null>(null);
   const meta = PAGE_META[type];
 
   async function handleSave() {
     if (!content.trim()) {
-      setMsg({ kind: "error", text: "Content cannot be empty." });
       toastError("Validation Error", "Page content cannot be empty.");
       return;
     }
     setSaving(true);
-    setMsg(null);
     try {
       let saved: PageResponse;
       if (page) {
@@ -93,7 +90,6 @@ function EditorPanel({
       } else {
         saved = await pagesApi.create(type, content);
       }
-      setMsg({ kind: "success", text: "Page saved successfully!" });
       toastSuccess("Page saved", `${meta.label} page content has been saved successfully.`);
       onSaved(saved);
     } catch (e: unknown) {

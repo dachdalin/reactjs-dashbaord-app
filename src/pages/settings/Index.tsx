@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { settingsApi, type SettingResponse } from "../../lib/api";
@@ -14,7 +14,7 @@ const COMMON_SETTING_PRESETS = [
 
 export default function Settings() {
   const { isAdmin } = useAuth();
-  const { success: toastSuccess, error: toastError } = useToast();
+  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast();
 
   // App / System settings state
   const [settings, setSettings] = useState<SettingResponse[]>([]);
@@ -25,7 +25,7 @@ export default function Settings() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editKey, setEditKey] = useState("");
   const [editValue, setEditValue] = useState("");
-  const [systemMsg, setSystemMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const isSubmitting = useRef(false);
 
   const loadSystemSettings = useCallback(async () => {
     setSettingsLoading(true);
@@ -44,58 +44,58 @@ export default function Settings() {
   }, [loadSystemSettings]);
 
   async function handleCreateSetting(k = newKey, v = newValue) {
+    if (isSubmitting.current) return;
     if (!k.trim() || !v.trim()) {
       const errMsg = "Both Key and Value are required.";
-      setSystemMsg({ type: "error", text: errMsg });
       toastError("Validation Error", errMsg);
       return;
     }
-    setSystemMsg(null);
+    isSubmitting.current = true;
     try {
       const s = await settingsApi.create(k.trim(), v.trim());
       setSettings((prev) => [...prev, s]);
       setNewKey("");
       setNewValue("");
-      setSystemMsg({ type: "success", text: `Setting '${k}' created successfully.` });
       toastSuccess("Setting Created", `Setting '${k}' created successfully.`);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Failed to create setting";
-      setSystemMsg({ type: "error", text: errMsg });
       toastError("Failed to create setting", errMsg);
+    } finally {
+      isSubmitting.current = false;
     }
   }
 
   async function handleUpdateSetting(id: number) {
+    if (isSubmitting.current) return;
     if (!editKey.trim() || !editValue.trim()) {
       toastError("Validation Error", "Both Key and Value are required.");
       return;
     }
-    setSystemMsg(null);
+    isSubmitting.current = true;
     try {
       const s = await settingsApi.update(id, editKey.trim(), editValue.trim());
       setSettings((prev) => prev.map((x) => (x.id === id ? s : x)));
       setEditingId(null);
-      setSystemMsg({ type: "success", text: "Setting updated successfully." });
       toastSuccess("Setting Updated", `Setting '${editKey}' updated successfully.`);
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : "Failed to update setting";
-      setSystemMsg({ type: "error", text: errMsg });
       toastError("Failed to update setting", errMsg);
+    } finally {
+      isSubmitting.current = false;
     }
   }
 
-  async function handleDeleteSetting(id: number) {
-    setSystemMsg(null);
-    try {
-      await settingsApi.delete(id);
-      setSettings((prev) => prev.filter((x) => x.id !== id));
-      setSystemMsg({ type: "success", text: "Setting removed successfully." });
-      toastSuccess("Setting Deleted", "System setting removed successfully.");
-    } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Failed to delete setting";
-      setSystemMsg({ type: "error", text: errMsg });
-      toastError("Failed to delete setting", errMsg);
-    }
+  function handleDeleteSetting(id: number, keyName: string) {
+    toastConfirm(`Are you sure you want to delete setting '${keyName}'?`, async () => {
+      try {
+        await settingsApi.delete(id);
+        setSettings((prev) => prev.filter((x) => x.id !== id));
+        toastSuccess("Setting Deleted", `Setting '${keyName}' removed successfully.`);
+      } catch (err: unknown) {
+        const errMsg = err instanceof Error ? err.message : "Failed to delete setting";
+        toastError("Failed to delete setting", errMsg);
+      }
+    });
   }
 
   const filteredSettings = settings.filter(
@@ -150,18 +150,6 @@ export default function Settings() {
             />
           </div>
         </div>
-
-        {systemMsg && (
-          <div
-            className={`p-3.5 rounded-xl text-sm flex items-center gap-2 ${
-              systemMsg.type === "success"
-                ? "bg-emerald-50 border border-emerald-200 text-emerald-800"
-                : "bg-red-50 border border-red-200 text-red-700"
-            }`}
-          >
-            {systemMsg.text}
-          </div>
-        )}
 
         {/* Quick Presets */}
         {isAdmin() && (
@@ -251,7 +239,7 @@ export default function Settings() {
                           </svg>
                         </button>
                         <button
-                          onClick={() => handleDeleteSetting(s.id)}
+                          onClick={() => handleDeleteSetting(s.id, s.key)}
                           title="Delete setting"
                           className="p-1.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
                         >

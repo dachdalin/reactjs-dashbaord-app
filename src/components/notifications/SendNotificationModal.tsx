@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { notificationsApi, usersApi, type UserResponse, type NotificationResponse } from "../../lib/api";
 import { useToast } from "../../hook/useToast";
 
@@ -37,6 +37,7 @@ export default function SendNotificationModal({
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isSubmitting = useRef(false);
 
   useEffect(() => {
     setLoadingUsers(true);
@@ -55,11 +56,13 @@ export default function SendNotificationModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (isSubmitting.current) return;
     if (!title.trim() || !message.trim()) {
       setError("Title and message are required.");
       return;
     }
 
+    isSubmitting.current = true;
     setSending(true);
     setError(null);
 
@@ -106,6 +109,7 @@ export default function SendNotificationModal({
       toastError("Failed to send notification", err instanceof Error ? err.message : undefined);
     } finally {
       setSending(false);
+      isSubmitting.current = false;
     }
   }
 

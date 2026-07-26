@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { tagsApi, type TagResponse } from "../../lib/api";
@@ -16,14 +16,17 @@ function TagModal({ tag: editTag, onClose, onSaved, onSuccess, onError }: TagMod
   const [title, setTitle] = useState(editTag?.title ?? "");
   const [saving, setSaving] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const isSubmitting = useRef(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (isSubmitting.current) return;
     if (!title.trim()) {
       setValidationError("Tag title is required.");
       return;
     }
 
+    isSubmitting.current = true;
     setSaving(true);
     setValidationError(null);
     try {
@@ -43,6 +46,7 @@ function TagModal({ tag: editTag, onClose, onSaved, onSuccess, onError }: TagMod
       );
     } finally {
       setSaving(false);
+      isSubmitting.current = false;
     }
   }
 
