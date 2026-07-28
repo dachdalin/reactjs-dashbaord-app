@@ -28,7 +28,7 @@ export default function UserProfile() {
   return (
     <div className="p-4 border-t border-white/10">
       <Link
-        to="/profile"
+        to="/admin/profile"
         title="View & Edit Profile"
         className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all cursor-pointer group border border-white/5 hover:border-white/20"
       >

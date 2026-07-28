@@ -76,7 +76,7 @@ export default function Blogs() {
         </div>
         {isAuthor() && (
           <button
-            onClick={() => navigate("/blogs/create")}
+            onClick={() => navigate("/admin/blogs/create")}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-500 text-slate-950 text-sm font-semibold shadow-md shadow-sky-200 hover:bg-sky-400 transition-all hover:scale-105 active:scale-95 self-start sm:self-auto"
           >
             <svg className="h-4 w-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -281,7 +281,7 @@ export default function Blogs() {
                       {canEdit(post) ? (
                         <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => navigate(`/blogs/edit/${post.id}`)}
+                            onClick={() => navigate(`/admin/blogs/edit/${post.id}`)}
                             className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-100 transition-colors"
                             title="Edit Article"
                           >

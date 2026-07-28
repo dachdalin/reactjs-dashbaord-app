@@ -27,15 +27,15 @@ type LinkType = {
 };
 
 const links: LinkType[] = [
-  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-  { name: "Team Users", href: "/teams", icon: UserGroupIcon, adminOnly: true },
-  { name: "Pages Manager", href: "/pages", icon: DocumentDuplicateIcon, adminOnly: true },
-  { name: "Blog Posts", href: "/blogs", icon: DocumentTextIcon },
-  { name: "Contact & Comments", href: "/comments", icon: ChatBubbleLeftEllipsisIcon },
-  { name: "Tags", href: "/tags", icon: TagIcon },
+  { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
+  { name: "Team Users", href: "/admin/teams", icon: UserGroupIcon, adminOnly: true },
+  { name: "Pages Manager", href: "/admin/pages", icon: DocumentDuplicateIcon, adminOnly: true },
+  { name: "Blog Posts", href: "/admin/blogs", icon: DocumentTextIcon },
+  { name: "Contact & Comments", href: "/admin/comments", icon: ChatBubbleLeftEllipsisIcon },
+  { name: "Tags", href: "/admin/tags", icon: TagIcon },
   {
     name: "Settings",
-    href: "/settings",
+    href: "/admin/settings",
     icon: Cog6ToothIcon,
   },
 ];
@@ -51,8 +51,8 @@ function NavLinks() {
       {visibleLinks.map((link) => {
         const LinkIcon = link.icon;
         const isActive =
-          link.href === "/dashboard" || link.href === "/"
-            ? pathname === "/" || pathname === "/dashboard"
+          link.href === "/admin/dashboard"
+            ? pathname === "/" || pathname === "/admin/dashboard"
             : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
         return (

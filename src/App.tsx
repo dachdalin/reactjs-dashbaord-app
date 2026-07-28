@@ -49,10 +49,12 @@ export default function App() {
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
 
-        {/* Dashboard routes — with sidebar layout */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        {/* Root redirect */}
+        <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+
+        {/* Admin routes — with sidebar layout */}
         <Route
-          path="/dashboard"
+          path="/admin/dashboard"
           element={
             <DashboardRoute>
               <Dashboard />
@@ -60,7 +62,7 @@ export default function App() {
           }
         />
         <Route
-          path="/teams"
+          path="/admin/teams"
           element={
             <DashboardRoute>
               <Teams />
@@ -68,7 +70,7 @@ export default function App() {
           }
         />
         <Route
-          path="/blogs"
+          path="/admin/blogs"
           element={
             <DashboardRoute>
               <Blogs />
@@ -76,7 +78,7 @@ export default function App() {
           }
         />
         <Route
-          path="/blogs/create"
+          path="/admin/blogs/create"
           element={
             <DashboardRoute>
               <PostEditor />
@@ -84,7 +86,7 @@ export default function App() {
           }
         />
         <Route
-          path="/blogs/edit/:id"
+          path="/admin/blogs/edit/:id"
           element={
             <DashboardRoute>
               <PostEditor />
@@ -92,7 +94,7 @@ export default function App() {
           }
         />
         <Route
-          path="/tags"
+          path="/admin/tags"
           element={
             <DashboardRoute>
               <TagsPage />
@@ -100,7 +102,7 @@ export default function App() {
           }
         />
         <Route
-          path="/settings"
+          path="/admin/settings"
           element={
             <DashboardRoute>
               <Settings />
@@ -108,7 +110,7 @@ export default function App() {
           }
         />
         <Route
-          path="/pages"
+          path="/admin/pages"
           element={
             <DashboardRoute>
               <PagesPage />
@@ -116,7 +118,7 @@ export default function App() {
           }
         />
         <Route
-          path="/comments"
+          path="/admin/comments"
           element={
             <DashboardRoute>
               <Comments />
@@ -124,7 +126,7 @@ export default function App() {
           }
         />
         <Route
-          path="/profile"
+          path="/admin/profile"
           element={
             <DashboardRoute>
               <ProfilePage />

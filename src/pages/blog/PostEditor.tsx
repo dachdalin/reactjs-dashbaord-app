@@ -267,7 +267,7 @@ export default function PostEditor() {
         toastSuccess("Post Published", "The article has been published successfully.");
       }
 
-      navigate("/blogs");
+      navigate("/admin/blogs");
     } catch (err: unknown) {
       toastError("Failed to save post", err instanceof Error ? err.message : undefined);
     } finally {
@@ -300,7 +300,7 @@ export default function PostEditor() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => navigate("/blogs")}
+            onClick={() => navigate("/admin/blogs")}
             className="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
             title="Back to Blog List"
           >
@@ -331,7 +331,7 @@ export default function PostEditor() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => navigate("/blogs")}
+            onClick={() => navigate("/admin/blogs")}
             className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
           >
             Cancel
