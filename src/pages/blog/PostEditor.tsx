@@ -410,7 +410,6 @@ export default function PostEditor() {
 
           {/* Banner Uploader Component */}
           <PostBannerUploader
-            postId={isEditing && id ? Number(id) : undefined}
             imageUrl={bannerUrl}
             onImageChange={setBannerUrl}
           />

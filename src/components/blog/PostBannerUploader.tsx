@@ -1,60 +1,58 @@
-import { useState } from "react";
-import { postsApi } from "../../lib/api";
-import ImageUploader from "../ui/ImageUploader";
+import { useState } from 'react'
+import { uploadsApi } from '../../lib/api'
+import ImageUploader from '../ui/ImageUploader'
 
 interface PostBannerUploaderProps {
-  postId?: number;
-  imageUrl?: string;
-  onImageChange: (url: string | undefined) => void;
+  imageUrl?: string
+  onImageChange: (url: string | undefined) => void
 }
 
 export default function PostBannerUploader({
-  postId,
   imageUrl,
   onImageChange,
 }: PostBannerUploaderProps) {
-  const [urlInput, setUrlInput] = useState(imageUrl ?? "");
-  const [showUrlField, setShowUrlField] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [urlInput, setUrlInput] = useState(imageUrl ?? '')
+  const [showUrlField, setShowUrlField] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleUpload = async (file: File, onProgress: (pct: number) => void) => {
-    // Local preview URL as fallback
-    const localUrl = URL.createObjectURL(file);
-    // If post ID exists, upload to server directly
-    if (postId) {
-      setError(null);
-      try {
-        onProgress(30);
-        const updated = await postsApi.uploadImage(postId, file);
-        onProgress(100);
-        return updated.image ?? localUrl;
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Failed to upload banner image.";
-        setError(msg);
-        throw err;
+  /**
+   * Called by ImageUploader whenever the user picks a file.
+   * – If there's already a stored URL (replace): PUT /uploads { file, oldUrl }
+   * – Otherwise (new):                           POST /uploads { file }
+   * Returns the final CDN URL string.
+   */
+  const handleUpload = async (file: File, onProgress: (pct: number) => void): Promise<string> => {
+    setError(null)
+    try {
+      onProgress(20)
+      let result
+      if (imageUrl) {
+        result = await uploadsApi.replace(file, imageUrl, 'posts')
+      } else {
+        result = await uploadsApi.upload(file, 'posts')
       }
+      onProgress(100)
+      onImageChange(result.url)
+      return result.url
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to upload banner image.'
+      setError(msg)
+      throw err
     }
-    onProgress(100);
-    return localUrl;
-  };
+  }
 
-  const handleRemoveImage = async () => {
-    onImageChange(undefined);
-    setUrlInput("");
-    if (postId) {
-      try {
-        await postsApi.deleteImage(postId);
-      } catch {/* ignore */}
-    }
-  };
+  const handleRemoveImage = () => {
+    onImageChange(undefined)
+    setUrlInput('')
+  }
 
   const handleUrlSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (urlInput.trim()) {
-      onImageChange(urlInput.trim());
-      setShowUrlField(false);
+      onImageChange(urlInput.trim())
+      setShowUrlField(false)
     }
-  };
+  }
 
   return (
     <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 space-y-4">
@@ -74,7 +72,7 @@ export default function PostBannerUploader({
             onClick={() => setShowUrlField(!showUrlField)}
             className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
           >
-            {showUrlField ? "Hide URL Input" : "Paste Image URL"}
+            {showUrlField ? 'Hide URL Input' : 'Paste Image URL'}
           </button>
           {imageUrl && (
             <button
@@ -112,7 +110,7 @@ export default function PostBannerUploader({
         </form>
       )}
 
-      {/* Global ImageUploader Component */}
+      {/* Global ImageUploader — calls handleUpload which hits /api/v1/uploads */}
       <ImageUploader
         value={imageUrl}
         onChange={onImageChange}
@@ -120,5 +118,5 @@ export default function PostBannerUploader({
         heightClass="h-48 sm:h-64"
       />
     </div>
-  );
+  )
 }

@@ -27,10 +27,10 @@ type LinkType = {
 };
 
 const links: LinkType[] = [
-  { name: "Dashboard", href: "/", icon: HomeIcon },
-  { name: "Team Users", href: "/team", icon: UserGroupIcon, adminOnly: true },
+  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { name: "Team Users", href: "/teams", icon: UserGroupIcon, adminOnly: true },
   { name: "Pages Manager", href: "/pages", icon: DocumentDuplicateIcon, adminOnly: true },
-  { name: "Blog Posts", href: "/blog", icon: DocumentTextIcon },
+  { name: "Blog Posts", href: "/blogs", icon: DocumentTextIcon },
   { name: "Contact & Comments", href: "/comments", icon: ChatBubbleLeftEllipsisIcon },
   { name: "Tags", href: "/tags", icon: TagIcon },
   {
@@ -50,7 +50,10 @@ function NavLinks() {
     <nav className="flex-1 space-y-1.5 px-4 py-4">
       {visibleLinks.map((link) => {
         const LinkIcon = link.icon;
-        const isActive = pathname === link.href;
+        const isActive =
+          link.href === "/dashboard" || link.href === "/"
+            ? pathname === "/" || pathname === "/dashboard"
+            : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
         return (
           <Link

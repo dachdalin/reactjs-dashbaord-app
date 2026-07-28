@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
-import { usersApi } from "../../lib/api";
+import { usersApi, uploadsApi } from "../../lib/api";
 import ImageUploader from "../../components/ui/ImageUploader";
 
 export default function ProfilePage() {
@@ -51,17 +51,25 @@ export default function ProfilePage() {
   }
 
   const handleAvatarUpload = async (file: File, onProgress: (percent: number) => void) => {
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error('User not found');
     try {
-      onProgress(30);
-      const updated = await usersApi.uploadAvatar(user.id, file);
+      onProgress(20);
+      let result;
+      if (user.avatar) {
+        result = await uploadsApi.replace(file, user.avatar, 'avatars');
+      } else {
+        result = await uploadsApi.upload(file, 'avatars');
+      }
+      onProgress(80);
+      // Persist the returned CDN URL back to the user record
+      const updated = await usersApi.update(user.id, { avatar: result.url });
       onProgress(100);
       setUser(updated);
-      toastSuccess("Avatar Updated", "Your profile picture has been updated.");
-      return updated.avatar ?? URL.createObjectURL(file);
+      toastSuccess('Avatar Updated', 'Your profile picture has been updated.');
+      return result.url;
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Failed to upload avatar.";
-      toastError("Failed to upload avatar", errMsg);
+      const errMsg = err instanceof Error ? err.message : 'Failed to upload avatar.';
+      toastError('Failed to upload avatar', errMsg);
       throw err;
     }
   };
@@ -70,14 +78,15 @@ export default function ProfilePage() {
     if (!user) return;
     setMsg(null);
     try {
-      await usersApi.deleteAvatar(user.id);
-      setUser({ ...user, avatar: undefined });
-      toastSuccess("Avatar Removed", "Your profile picture has been removed.");
+      const updated = await usersApi.update(user.id, { avatar: undefined });
+      setUser(updated);
+      toastSuccess('Avatar Removed', 'Your profile picture has been removed.');
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Failed to remove avatar.";
-      toastError("Failed to remove avatar", errMsg);
+      const errMsg = err instanceof Error ? err.message : 'Failed to remove avatar.';
+      toastError('Failed to remove avatar', errMsg);
     }
   };
+
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();

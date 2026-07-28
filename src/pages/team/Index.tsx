@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
-import { usersApi, type UserResponse } from "../../lib/api";
+import { usersApi, uploadsApi, type UserResponse } from "../../lib/api";
 import SendNotificationModal from "../../components/notifications/SendNotificationModal";
+import ImageUploader from "../../components/ui/ImageUploader";
 
 // ── User Modal ────────────────────────────────────────────
 interface UserModalProps {
@@ -19,9 +20,35 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
   const [phone, setPhone] = useState(editUser?.phone ?? "");
   const [position, setPosition] = useState(editUser?.position ?? "");
   const [type, setType] = useState<string>(editUser?.type ?? "USER");
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(editUser?.avatar);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const isSubmitting = useRef(false);
+
+  // Keep avatarUrl in sync if the editUser prop changes
+  useEffect(() => {
+    setAvatarUrl(editUser?.avatar);
+  }, [editUser?.avatar]);
+
+  /** Upload avatar via generic /api/v1/uploads and return the CDN URL */
+  const handleAvatarUpload = async (file: File, onProgress: (pct: number) => void): Promise<string> => {
+    try {
+      onProgress(20);
+      let result;
+      if (avatarUrl) {
+        result = await uploadsApi.replace(file, avatarUrl, "avatars");
+      } else {
+        result = await uploadsApi.upload(file, "avatars");
+      }
+      onProgress(100);
+      setAvatarUrl(result.url);
+      return result.url;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to upload avatar.";
+      toastError("Upload Failed", msg);
+      throw err;
+    }
+  };
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +62,11 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
     setSaving(true); setError(null);
     try {
       if (editUser) {
-        await usersApi.update(editUser.id, { name, email, password: password || undefined, phone, position, type: type as UserResponse["type"] });
+        await usersApi.update(editUser.id, {
+          name, email, password: password || undefined,
+          phone, position, type: type as UserResponse["type"],
+          avatar: avatarUrl,
+        });
         toastSuccess("User Updated", `User ${name} updated successfully.`);
       } else {
         if (!password) {
@@ -45,7 +76,11 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
           isSubmitting.current = false;
           return;
         }
-        await usersApi.create({ name, email, password, phone, position, type: type as UserResponse["type"] });
+        await usersApi.create({
+          name, email, password, phone, position,
+          type: type as UserResponse["type"],
+          avatar: avatarUrl,
+        });
         toastSuccess("User Created", `User ${name} created successfully.`);
       }
       onSaved(); onClose();
@@ -53,16 +88,20 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
       const errMsg = e instanceof Error ? e.message : "Failed to save user";
       setError(errMsg);
       toastError("Failed to save user", errMsg);
-    } finally { 
-      setSaving(false); 
+    } finally {
+      setSaving(false);
       isSubmitting.current = false;
     }
   }
 
+  const initials = name
+    ? name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    : "?";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200 shadow-2xl">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+      <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 sticky top-0 bg-white z-10">
           <h2 className="text-xl font-bold text-slate-950">{editUser ? "Edit User" : "Create User"}</h2>
           <button onClick={onClose} className="p-2 rounded-lg text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-colors">
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,8 +109,48 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
             </svg>
           </button>
         </div>
-        <form onSubmit={handleSave} className="p-6 space-y-4">
+        <form onSubmit={handleSave} className="p-6 space-y-5">
           {error && <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-950 text-sm">{error}</div>}
+
+          {/* ── Avatar Upload ── */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Profile Avatar</label>
+            <div className="flex items-center gap-4">
+              {/* Circle preview */}
+              <div className="relative shrink-0">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={name || "Avatar"}
+                    className="h-16 w-16 rounded-full object-cover border-2 border-slate-200 shadow-sm"
+                  />
+                ) : (
+                  <div className="h-16 w-16 rounded-full bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-lg border-2 border-slate-200">
+                    {initials}
+                  </div>
+                )}
+              </div>
+              {/* Compact uploader zone */}
+              <div className="flex-1">
+                <ImageUploader
+                  value={avatarUrl}
+                  onChange={(val) => setAvatarUrl(val)}
+                  onUpload={handleAvatarUpload}
+                  heightClass="h-20"
+                />
+              </div>
+              {avatarUrl && (
+                <button
+                  type="button"
+                  onClick={() => setAvatarUrl(undefined)}
+                  className="text-xs text-red-500 hover:text-red-700 font-semibold underline shrink-0"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Name *</label>
@@ -126,6 +205,7 @@ function UserModal({ user: editUser, onClose, onSaved }: UserModalProps) {
     </div>
   );
 }
+
 
 // ── Role badge helpers ────────────────────────────────────
 const ROLE_COLORS: Record<string, string> = {

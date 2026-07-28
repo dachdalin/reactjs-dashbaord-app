@@ -99,6 +99,10 @@ export interface PageResponse {
   updatedAt: string;
 }
 
+export interface UploadResponse {
+  url: string;
+}
+
 // ── Helpers ───────────────────────────────────────────────
 function getToken(): string | null {
   const expiresAt = localStorage.getItem('auth_expires_at');
@@ -154,13 +158,13 @@ async function request<T>(
   return data as T;
 }
 
-async function upload<T>(path: string, formData: FormData): Promise<T> {
+async function uploadForm<T>(path: string, formData: FormData, method: 'POST' | 'PUT' = 'POST'): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(`${BASE_URL}${path}`, {
-    method: 'POST',
+    method,
     body: formData,
     headers,
   });
@@ -176,6 +180,33 @@ async function upload<T>(path: string, formData: FormData): Promise<T> {
   }
   return data as T;
 }
+
+// ── Generic Uploads ────────────────────────────────────────
+export const uploadsApi = {
+  /**
+   * POST /api/v1/uploads
+   * Upload a new file. Returns { url } pointing to the stored file.
+   */
+  upload: (file: File, folder?: string): Promise<UploadResponse> => {
+    const fd = new FormData();
+    fd.append('file', file);
+    if (folder) fd.append('folder', folder);
+    return uploadForm<UploadResponse>('/uploads', fd, 'POST');
+  },
+
+  /**
+   * PUT /api/v1/uploads
+   * Upload a replacement file, deleting the old one atomically.
+   * Returns { url } for the new stored file.
+   */
+  replace: (file: File, oldUrl: string, folder?: string): Promise<UploadResponse> => {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('oldUrl', oldUrl);
+    if (folder) fd.append('folder', folder);
+    return uploadForm<UploadResponse>('/uploads', fd, 'PUT');
+  },
+};
 
 // ── Auth ──────────────────────────────────────────────────
 export const authApi = {
@@ -207,7 +238,7 @@ export const usersApi = {
   uploadAvatar: (id: number, file: File) => {
     const fd = new FormData();
     fd.append('avatar', file);
-    return upload<UserResponse>(`/users/${id}/avatar`, fd);
+    return uploadForm<UserResponse>(`/users/${id}/avatar`, fd);
   },
   deleteAvatar: (id: number) => request<void>(`/users/${id}/avatar`, { method: 'DELETE' }),
 };
@@ -228,7 +259,7 @@ export const postsApi = {
   uploadImage: (id: number, file: File) => {
     const fd = new FormData();
     fd.append('image', file);
-    return upload<PostResponse>(`/posts/${id}/image`, fd);
+    return uploadForm<PostResponse>(`/posts/${id}/image`, fd);
   },
   deleteImage: (id: number) => request<void>(`/posts/${id}/image`, { method: 'DELETE' }),
 };
