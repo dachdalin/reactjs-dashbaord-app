@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 export default function NotFound() {
+  usePageTitle('404 – Page Not Found')
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-[70vh] text-center px-4">
       {/* Animated 404 illustration */}

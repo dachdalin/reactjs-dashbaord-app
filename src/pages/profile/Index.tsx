@@ -3,8 +3,10 @@ import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { usersApi, uploadsApi } from "../../lib/api";
 import ImageUploader from "../../components/ui/ImageUploader";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 export default function ProfilePage() {
+  usePageTitle('My Profile')
   const { user, setUser, isAdmin } = useAuth();
   const { success: toastSuccess, error: toastError } = useToast();
 

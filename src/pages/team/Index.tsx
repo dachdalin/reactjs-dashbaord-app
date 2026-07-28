@@ -4,6 +4,7 @@ import { useToast } from "../../hook/useToast";
 import { usersApi, uploadsApi, type UserResponse } from "../../lib/api";
 import SendNotificationModal from "../../components/notifications/SendNotificationModal";
 import ImageUploader from "../../components/ui/ImageUploader";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 // ── User Modal ────────────────────────────────────────────
 interface UserModalProps {
@@ -216,6 +217,7 @@ const ROLE_COLORS: Record<string, string> = {
 
 // ── Main Teams/Users Page ─────────────────────────────────
 export default function Teams() {
+  usePageTitle('Team Users')
   const { isAdmin } = useAuth();
   const toast = useToast();
   const [users, setUsers] = useState<UserResponse[]>([]);

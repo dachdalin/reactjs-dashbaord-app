@@ -4,6 +4,7 @@ import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { postsApi, tagsApi, type TagResponse } from "../../lib/api";
 import PostBannerUploader from "../../components/blog/PostBannerUploader";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 const POST_TYPES = ["ARTICLE", "NEWS", "TUTORIAL", "CODE"] as const;
 
@@ -111,6 +112,7 @@ function parseHtmlToSections(html: string): ContentSection[] {
 export default function PostEditor() {
   const { id } = useParams<{ id?: string }>();
   const isEditing = Boolean(id);
+  usePageTitle(isEditing ? 'Edit Article' : 'Create Article')
   const navigate = useNavigate();
   const { user } = useAuth();
   const { success: toastSuccess, error: toastError, warning: toastWarning } = useToast();

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { contactsApi, notificationsApi, type ContactResponse, type NotificationResponse } from "../../lib/api";
 import SendNotificationModal from "../../components/notifications/SendNotificationModal";
 import { useToast } from "../../hook/useToast";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 // ── Helpers ───────────────────────────────────────────────
 function timeAgo(iso: string): string {
@@ -211,6 +212,7 @@ function NotificationRow({ n, onMarkRead }: { n: NotificationResponse; onMarkRea
 
 // ── Main Comments Page ────────────────────────────────────
 export default function Comments() {
+  usePageTitle('Contact & Comments')
   const { success: toastSuccess, error: toastError } = useToast();
   const [contacts, setContacts] = useState<ContactResponse[]>([]);
   const [commentNotifs, setCommentNotifs] = useState<NotificationResponse[]>([]);

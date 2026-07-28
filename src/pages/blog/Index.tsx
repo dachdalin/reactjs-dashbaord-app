@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { postsApi, type PostResponse } from "../../lib/api";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 export default function Blogs() {
+  usePageTitle('Blog Posts')
   const navigate = useNavigate();
   const { user, isAdmin, isAuthor } = useAuth();
   const toast = useToast();

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/useAuth'
 import { useToast } from '../../hook/useToast'
 import StatsCard from '../../components/StatsCard'
 import ActivityCard from '../../components/ActivityCard'
+import { usePageTitle } from '../../hook/usePageTitle'
 
 interface DashStats {
   totalPosts: number
@@ -32,6 +33,7 @@ function formatNumber(value: number): string {
 }
 
 export default function Dashboard() {
+  usePageTitle('Dashboard')
   const { isAdmin, isAuthor, user } = useAuth()
   const { error: toastError } = useToast()
   const [stats, setStats] = useState<DashStats>({

@@ -3,6 +3,7 @@ import { useAuth } from '../../context/useAuth'
 import { useToast } from '../../hook/useToast'
 import { settingsApi, uploadsApi, type SettingResponse } from '../../lib/api'
 import ImageUploader from '../../components/ui/ImageUploader'
+import { usePageTitle } from '../../hook/usePageTitle'
 
 const COMMON_SETTING_PRESETS = [
   { key: 'SITE_NAME', value: 'ReactJS Dashboard App' },
@@ -123,6 +124,7 @@ function BrandingSlot({ label, description, icon, settingKey, settings, onSaved 
 
 // ── Main Settings Page ────────────────────────────────────
 export default function Settings() {
+  usePageTitle('System Settings')
   const { isAdmin } = useAuth()
   const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast()
 

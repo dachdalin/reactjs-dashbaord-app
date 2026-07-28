@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "../../context/useAuth";
 import { useToast } from "../../hook/useToast";
 import { tagsApi, type TagResponse } from "../../lib/api";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 // ── Tag Modal ─────────────────────────────────────────────
 interface TagModalProps {
@@ -126,6 +127,7 @@ function TagModal({ tag: editTag, onClose, onSaved, onSuccess, onError }: TagMod
 
 // ── Tags Page ─────────────────────────────────────────────
 export default function TagsPage() {
+  usePageTitle('Tags')
   const { isAdmin, isAuthor } = useAuth();
   const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast();
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { pagesApi, type PageResponse } from "../../lib/api";
 import RichTextEditor from "../../components/editor/RichTextEditor";
 import { useToast } from "../../hook/useToast";
+import { usePageTitle } from "../../hook/usePageTitle";
 
 // ── Types ─────────────────────────────────────────────────
 type PageType = PageResponse["type"];
@@ -169,6 +170,7 @@ function EditorPanel({
 
 // ── Main Pages Page ───────────────────────────────────────
 export default function Pages() {
+  usePageTitle('Site Pages')
   const { error: toastError } = useToast();
   const [pages, setPages] = useState<PageResponse[]>([]);
   const [loading, setLoading] = useState(true);
