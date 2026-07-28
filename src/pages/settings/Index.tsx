@@ -1,108 +1,228 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useAuth } from "../../context/useAuth";
-import { useToast } from "../../hook/useToast";
-import { settingsApi, type SettingResponse } from "../../lib/api";
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useAuth } from '../../context/useAuth'
+import { useToast } from '../../hook/useToast'
+import { settingsApi, uploadsApi, type SettingResponse } from '../../lib/api'
+import ImageUploader from '../../components/ui/ImageUploader'
 
 const COMMON_SETTING_PRESETS = [
-  { key: "SITE_NAME", value: "ReactJS Dashboard App" },
-  { key: "MAINTENANCE_MODE", value: "false" },
-  { key: "API_RATE_LIMIT", value: "100" },
-  { key: "NOTIFICATIONS_ENABLED", value: "true" },
-  { key: "DEFAULT_USER_ROLE", value: "USER" },
-  { key: "SYSTEM_VERSION", value: "v1.0.0" },
-];
+  { key: 'SITE_NAME', value: 'ReactJS Dashboard App' },
+  { key: 'MAINTENANCE_MODE', value: 'false' },
+  { key: 'API_RATE_LIMIT', value: '100' },
+  { key: 'NOTIFICATIONS_ENABLED', value: 'true' },
+  { key: 'DEFAULT_USER_ROLE', value: 'USER' },
+  { key: 'SYSTEM_VERSION', value: 'v1.0.0' },
+]
 
+/** Keys that are handled by the Branding Assets card (excluded from generic table) */
+const BRANDING_KEYS = ['WEB_LOGO', 'WEB_FAV'] as const
+type BrandingKey = (typeof BRANDING_KEYS)[number]
+
+// ── Branding Upload Card ──────────────────────────────────
+interface BrandingSlotProps {
+  label: string
+  description: string
+  icon: string
+  settingKey: BrandingKey
+  settings: SettingResponse[]
+  onSaved: (updated: SettingResponse) => void
+}
+
+function BrandingSlot({ label, description, icon, settingKey, settings, onSaved }: BrandingSlotProps) {
+  const { error: toastError, success: toastSuccess } = useToast()
+  const existing = settings.find((s) => s.key === settingKey)
+  const currentUrl = existing?.value || undefined
+
+  const handleUpload = async (file: File, onProgress: (pct: number) => void): Promise<string> => {
+    try {
+      onProgress(20)
+      let result
+      if (currentUrl) {
+        result = await uploadsApi.replace(file, currentUrl, 'branding')
+      } else {
+        result = await uploadsApi.upload(file, 'branding')
+      }
+      onProgress(70)
+
+      let saved: SettingResponse
+      if (existing) {
+        saved = await settingsApi.update(existing.id, settingKey, result.url)
+      } else {
+        saved = await settingsApi.create(settingKey, result.url)
+      }
+
+      onProgress(100)
+      onSaved(saved)
+      toastSuccess(`${label} Updated`, `The ${label} image has been saved successfully.`)
+      return result.url
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : `Failed to upload ${label}.`
+      toastError('Upload Failed', msg)
+      throw err
+    }
+  }
+
+  const handleRemove = async () => {
+    if (!existing) return
+    try {
+      await settingsApi.update(existing.id, settingKey, '')
+      onSaved({ ...existing, value: '' })
+      toastSuccess(`${label} Removed`, `The ${label} image has been cleared.`)
+    } catch (err: unknown) {
+      toastError('Remove Failed', err instanceof Error ? err.message : undefined)
+    }
+  }
+
+  return (
+    <div className="rounded-2xl bg-slate-50/60 border border-slate-200 p-5 space-y-3 flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <span className="text-xl">{icon}</span>
+          <div>
+            <p className="text-sm font-bold text-slate-950">{label}</p>
+            <p className="text-xs text-slate-500">{description}</p>
+          </div>
+        </div>
+        <span className="text-[10px] font-mono font-bold px-2 py-1 rounded-md bg-slate-200 text-slate-600">
+          {settingKey}
+        </span>
+      </div>
+
+      {/* Current value preview */}
+      {currentUrl && (
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-slate-200">
+          <img
+            src={currentUrl}
+            alt={label}
+            className="h-10 w-10 rounded-lg object-contain border border-slate-100 bg-slate-50 shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-semibold text-slate-700 truncate">Active URL</p>
+            <p className="text-[10px] text-slate-400 font-mono truncate">{currentUrl}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRemove}
+            className="shrink-0 px-2.5 py-1.5 rounded-lg border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
+          >
+            Clear
+          </button>
+        </div>
+      )}
+
+      {/* Uploader */}
+      <ImageUploader
+        value={currentUrl}
+        onChange={() => {/* handled via onUpload */}}
+        onUpload={handleUpload}
+        heightClass="h-32"
+      />
+    </div>
+  )
+}
+
+// ── Main Settings Page ────────────────────────────────────
 export default function Settings() {
-  const { isAdmin } = useAuth();
-  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast();
+  const { isAdmin } = useAuth()
+  const { success: toastSuccess, error: toastError, confirm: toastConfirm } = useToast()
 
-  // App / System settings state
-  const [settings, setSettings] = useState<SettingResponse[]>([]);
-  const [settingsLoading, setSettingsLoading] = useState(true);
-  const [searchKey, setSearchKey] = useState("");
-  const [newKey, setNewKey] = useState("");
-  const [newValue, setNewValue] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editKey, setEditKey] = useState("");
-  const [editValue, setEditValue] = useState("");
-  const isSubmitting = useRef(false);
+  const [settings, setSettings] = useState<SettingResponse[]>([])
+  const [settingsLoading, setSettingsLoading] = useState(true)
+  const [searchKey, setSearchKey] = useState('')
+  const [newKey, setNewKey] = useState('')
+  const [newValue, setNewValue] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editKey, setEditKey] = useState('')
+  const [editValue, setEditValue] = useState('')
+  const isSubmitting = useRef(false)
 
   const loadSystemSettings = useCallback(async () => {
-    setSettingsLoading(true);
+    setSettingsLoading(true)
     try {
-      const data = await settingsApi.list();
-      setSettings(data);
+      const data = await settingsApi.list()
+      setSettings(data)
     } catch (err: unknown) {
-      toastError("Failed to load settings", err instanceof Error ? err.message : undefined);
+      toastError('Failed to load settings', err instanceof Error ? err.message : undefined)
     } finally {
-      setSettingsLoading(false);
+      setSettingsLoading(false)
     }
-  }, [toastError]);
+  }, [toastError])
 
   useEffect(() => {
-    loadSystemSettings();
-  }, [loadSystemSettings]);
+    loadSystemSettings()
+  }, [loadSystemSettings])
+
+  /** Upsert a single setting in local state after branding upload */
+  function handleBrandingSaved(updated: SettingResponse) {
+    setSettings((prev) => {
+      const idx = prev.findIndex((s) => s.id === updated.id)
+      if (idx >= 0) {
+        const next = [...prev]
+        next[idx] = updated
+        return next
+      }
+      return [...prev, updated]
+    })
+  }
 
   async function handleCreateSetting(k = newKey, v = newValue) {
-    if (isSubmitting.current) return;
+    if (isSubmitting.current) return
     if (!k.trim() || !v.trim()) {
-      const errMsg = "Both Key and Value are required.";
-      toastError("Validation Error", errMsg);
-      return;
+      toastError('Validation Error', 'Both Key and Value are required.')
+      return
     }
-    isSubmitting.current = true;
+    isSubmitting.current = true
     try {
-      const s = await settingsApi.create(k.trim(), v.trim());
-      setSettings((prev) => [...prev, s]);
-      setNewKey("");
-      setNewValue("");
-      toastSuccess("Setting Created", `Setting '${k}' created successfully.`);
+      const s = await settingsApi.create(k.trim(), v.trim())
+      setSettings((prev) => [...prev, s])
+      setNewKey('')
+      setNewValue('')
+      toastSuccess('Setting Created', `Setting '${k}' created successfully.`)
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Failed to create setting";
-      toastError("Failed to create setting", errMsg);
+      toastError('Failed to create setting', err instanceof Error ? err.message : undefined)
     } finally {
-      isSubmitting.current = false;
+      isSubmitting.current = false
     }
   }
 
   async function handleUpdateSetting(id: number) {
-    if (isSubmitting.current) return;
+    if (isSubmitting.current) return
     if (!editKey.trim() || !editValue.trim()) {
-      toastError("Validation Error", "Both Key and Value are required.");
-      return;
+      toastError('Validation Error', 'Both Key and Value are required.')
+      return
     }
-    isSubmitting.current = true;
+    isSubmitting.current = true
     try {
-      const s = await settingsApi.update(id, editKey.trim(), editValue.trim());
-      setSettings((prev) => prev.map((x) => (x.id === id ? s : x)));
-      setEditingId(null);
-      toastSuccess("Setting Updated", `Setting '${editKey}' updated successfully.`);
+      const s = await settingsApi.update(id, editKey.trim(), editValue.trim())
+      setSettings((prev) => prev.map((x) => (x.id === id ? s : x)))
+      setEditingId(null)
+      toastSuccess('Setting Updated', `Setting '${editKey}' updated successfully.`)
     } catch (err: unknown) {
-      const errMsg = err instanceof Error ? err.message : "Failed to update setting";
-      toastError("Failed to update setting", errMsg);
+      toastError('Failed to update setting', err instanceof Error ? err.message : undefined)
     } finally {
-      isSubmitting.current = false;
+      isSubmitting.current = false
     }
   }
 
   function handleDeleteSetting(id: number, keyName: string) {
     toastConfirm(`Are you sure you want to delete setting '${keyName}'?`, async () => {
       try {
-        await settingsApi.delete(id);
-        setSettings((prev) => prev.filter((x) => x.id !== id));
-        toastSuccess("Setting Deleted", `Setting '${keyName}' removed successfully.`);
+        await settingsApi.delete(id)
+        setSettings((prev) => prev.filter((x) => x.id !== id))
+        toastSuccess('Setting Deleted', `Setting '${keyName}' removed successfully.`)
       } catch (err: unknown) {
-        const errMsg = err instanceof Error ? err.message : "Failed to delete setting";
-        toastError("Failed to delete setting", errMsg);
+        toastError('Failed to delete setting', err instanceof Error ? err.message : undefined)
       }
-    });
+    })
   }
 
+  // Exclude branding keys from the generic table
   const filteredSettings = settings.filter(
     (s) =>
-      s.key.toLowerCase().includes(searchKey.toLowerCase()) ||
-      s.value.toLowerCase().includes(searchKey.toLowerCase())
-  );
+      !(BRANDING_KEYS as readonly string[]).includes(s.key) &&
+      (s.key.toLowerCase().includes(searchKey.toLowerCase()) ||
+        s.value.toLowerCase().includes(searchKey.toLowerCase()))
+  )
 
   return (
     <div className="space-y-8">
@@ -125,15 +245,59 @@ export default function Settings() {
         </button>
       </div>
 
-      {/* System Config Table / Cards */}
+      {/* ── Branding Assets Card ── */}
+      <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-5">
+        <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+          <div className="h-9 w-9 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center shrink-0">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-slate-950">Branding Assets</h2>
+            <p className="text-xs text-slate-500">
+              Upload your website logo and favicon. Images are stored in S3 and the URL is saved as a system setting.
+            </p>
+          </div>
+        </div>
+
+        {settingsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {[1, 2].map((n) => (
+              <div key={n} className="h-52 rounded-2xl bg-slate-100 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <BrandingSlot
+              label="Website Logo"
+              description="Main logo shown in the header / sidebar."
+              icon="🖼️"
+              settingKey="WEB_LOGO"
+              settings={settings}
+              onSaved={handleBrandingSaved}
+            />
+            <BrandingSlot
+              label="Website Favicon"
+              description="Small icon shown in browser tabs (ICO/PNG/SVG)."
+              icon="⭐"
+              settingKey="WEB_FAV"
+              settings={settings}
+              onSaved={handleBrandingSaved}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* ── System Config Table ── */}
       <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">System Parameters & Configurations</h2>
+            <h2 className="text-xl font-semibold text-slate-950">System Parameters &amp; Configurations</h2>
             <p className="text-xs text-slate-500 mt-0.5">
               {isAdmin()
-                ? "Full administrative access to add, update, or delete system variables."
-                : "Read-only configuration view for non-admin users."}
+                ? 'Full administrative access to add, update, or delete system variables.'
+                : 'Read-only configuration view for non-admin users.'}
             </p>
           </div>
           {/* Search */}
@@ -227,9 +391,9 @@ export default function Settings() {
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => {
-                            setEditingId(s.id);
-                            setEditKey(s.key);
-                            setEditValue(s.value);
+                            setEditingId(s.id)
+                            setEditKey(s.key)
+                            setEditValue(s.value)
                           }}
                           title="Edit setting"
                           className="p-1.5 rounded-lg text-slate-500 hover:text-slate-950 hover:bg-slate-200/60 transition-colors"
@@ -272,7 +436,7 @@ export default function Settings() {
               <input
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreateSetting()}
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateSetting()}
                 className="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-950 text-sm font-mono placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-sky-400/40"
                 placeholder="Setting value"
               />
@@ -287,5 +451,5 @@ export default function Settings() {
         )}
       </div>
     </div>
-  );
+  )
 }
