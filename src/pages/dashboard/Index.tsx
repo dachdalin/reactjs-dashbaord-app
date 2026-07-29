@@ -32,6 +32,37 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat('en', { notation: value >= 10000 ? 'compact' : 'standard' }).format(value)
 }
 
+const TYPE_COLORS: Record<PostResponse['type'], string> = {
+  ARTICLE: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+  NEWS: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+  TUTORIAL: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  CODE: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+}
+
+const RANK_COLORS = [
+  'bg-gradient-to-br from-amber-400 to-orange-500 text-white',
+  'bg-gradient-to-br from-slate-400 to-slate-500 text-white',
+  'bg-gradient-to-br from-amber-600 to-amber-700 text-white',
+  'bg-slate-700/80 text-slate-300',
+  'bg-slate-700/80 text-slate-300',
+]
+
+// ── Skeleton ─────────────────────────────────────────────
+function SkeletonCard() {
+  return (
+    <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 animate-pulse">
+      <div className="flex items-start justify-between">
+        <div className="space-y-3 flex-1">
+          <div className="h-2.5 w-20 rounded bg-slate-700" />
+          <div className="h-10 w-24 rounded bg-slate-700" />
+          <div className="h-2.5 w-28 rounded bg-slate-700" />
+        </div>
+        <div className="h-14 w-14 rounded-2xl bg-slate-700" />
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   usePageTitle('Dashboard')
   const { isAdmin, isAuthor, user } = useAuth()
@@ -115,168 +146,310 @@ export default function Dashboard() {
 
   const draftCount = Math.max(stats.totalPosts - stats.publishedPosts, 0)
   const averageViews = stats.totalPosts === 0 ? 0 : Math.round(stats.totalViews / stats.totalPosts)
+  const publishRate = stats.totalPosts === 0 ? 0 : Math.round((stats.publishedPosts / stats.totalPosts) * 100)
+
+  const currentHour = new Date().getHours()
+  const greeting = currentHour < 12 ? 'Good morning' : currentHour < 18 ? 'Good afternoon' : 'Good evening'
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="text-sm font-medium text-sky-700">Content overview</p>
-          <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950">Dashboard</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Welcome back{user ? `, ${user.name}` : ''}. Track publishing, audience, and inbox activity.
-          </p>
-        </div>
-        {isAuthor() && (
-          <Link
-            to="/blogs/create"
-            className="inline-flex w-fit items-center gap-2 rounded-lg bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800"
-          >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Post
-          </Link>
-        )}
-      </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatsCard
-          title="Total Posts"
-          value={loading ? '-' : formatNumber(stats.totalPosts)}
-          change={loading ? 'Loading content' : `${stats.publishedPosts} published`}
-          color="bg-sky-500 text-white"
-          icon={
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5A3.375 3.375 0 0010.125 2.25H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-            </svg>
-          }
-        />
-        <StatsCard
-          title="Total Views"
-          value={loading ? '-' : formatNumber(stats.totalViews)}
-          change="Across all posts"
-          color="bg-emerald-500 text-white"
-          icon={
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          }
-        />
-        {isAdmin() && (
-          <StatsCard
-            title="Users"
-            value={loading ? '-' : formatNumber(stats.totalUsers ?? 0)}
-            change="Registered accounts"
-            color="bg-indigo-500 text-white"
-            icon={
-              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72M15 11.25a3 3 0 11-6 0 3 3 0 016 0zm6 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zM3 18.72a9.094 9.094 0 013.741-.479 3 3 0 014.682-2.72M6.75 11.25a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-              </svg>
-            }
+      {/* ── Page Header ── */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-700 p-6 md:p-8">
+        {/* Decorative blobs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full bg-white/10 blur-2xl" />
+          <div className="absolute -bottom-8 -left-8 w-40 h-40 rounded-full bg-white/5 blur-xl" />
+          {/* grid pattern */}
+          <div
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px)',
+              backgroundSize: '32px 32px',
+            }}
           />
-        )}
-        <StatsCard
-          title="Messages"
-          value={loading ? '-' : formatNumber(stats.totalContacts)}
-          change={`${stats.totalSubscribers} newsletter subscribers`}
-          color="bg-amber-500 text-white"
-          icon={
-            <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0l-7.5-4.615a2.25 2.25 0 01-1.07-1.916V6.75" />
-            </svg>
-          }
-        />
+        </div>
+
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 border border-white/25 text-white/80 text-xs font-medium mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
+              Content overview
+            </div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+              {greeting}{user ? `, ${user.name.split(' ')[0]}` : ''}! 👋
+            </h1>
+            <p className="mt-1.5 text-white/70 text-sm max-w-lg">
+              Track your publishing performance, audience growth, and inbox activity all in one place.
+            </p>
+          </div>
+
+          {isAuthor() && (
+            <Link
+              to="/admin/blogs/create"
+              className="group inline-flex w-fit items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-indigo-700 shadow-xl shadow-indigo-900/30 hover:bg-indigo-50 transition-all duration-200 hover:-translate-y-0.5"
+            >
+              <svg className="h-4 w-4 transition-transform group-hover:rotate-90 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              New Post
+            </Link>
+          )}
+        </div>
       </div>
 
+      {/* ── Stats Grid ── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+        ) : (
+          <>
+            <StatsCard
+              title="Total Posts"
+              value={formatNumber(stats.totalPosts)}
+              change={`${stats.publishedPosts} published · ${draftCount} drafts`}
+              gradient="from-violet-500 to-indigo-600"
+              glowColor="hover:shadow-violet-500/20"
+              trend="up"
+              icon={
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              }
+            />
+            <StatsCard
+              title="Total Views"
+              value={formatNumber(stats.totalViews)}
+              change="Across all posts"
+              gradient="from-emerald-500 to-teal-600"
+              glowColor="hover:shadow-emerald-500/20"
+              trend="up"
+              icon={
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              }
+            />
+            {isAdmin() && (
+              <StatsCard
+                title="Team Users"
+                value={formatNumber(stats.totalUsers ?? 0)}
+                change="Registered accounts"
+                gradient="from-sky-500 to-blue-600"
+                glowColor="hover:shadow-sky-500/20"
+                trend="neutral"
+                icon={
+                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                }
+              />
+            )}
+            <StatsCard
+              title="Messages"
+              value={formatNumber(stats.totalContacts)}
+              change={`${stats.totalSubscribers} newsletter subscribers`}
+              gradient="from-amber-500 to-orange-600"
+              glowColor="hover:shadow-amber-500/20"
+              trend="up"
+              icon={
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              }
+            />
+          </>
+        )}
+      </div>
+
+      {/* ── Main Content Row ── */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+
+        {/* Activity Feed – spans 2 cols */}
         <section className="xl:col-span-2">
           {loading ? (
-            <div className="h-64 animate-pulse rounded-xl border border-slate-200 bg-white" />
+            <div className="h-72 animate-pulse rounded-2xl bg-slate-800/50 border border-slate-700/50" />
           ) : activities.length > 0 ? (
             <ActivityCard activities={activities} />
           ) : (
-            <div className="rounded-xl border border-slate-200 bg-white p-10 text-center shadow-sm">
-              <p className="text-sm font-semibold text-slate-950">No posts yet</p>
-              <p className="mt-1 text-sm text-slate-500">Create the first article to start filling the activity feed.</p>
+            <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-10 text-center flex flex-col items-center gap-3">
+              <div className="w-14 h-14 rounded-2xl bg-slate-700/60 flex items-center justify-center">
+                <svg className="w-7 h-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-white">No activity yet</p>
+              <p className="text-sm text-slate-400">Create your first post to start building the activity feed.</p>
             </div>
           )}
         </section>
 
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        {/* Popular Posts – 1 col */}
+        <section className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-base font-semibold text-slate-950">Popular Posts</h2>
-              <p className="text-sm text-slate-500">Ranked by views</p>
+              <h2 className="text-base font-semibold text-white">Popular Posts</h2>
+              <p className="text-sm text-slate-400 mt-0.5">Ranked by views</p>
             </div>
-            <Link to="/blogs" className="text-sm font-medium text-sky-700 hover:text-sky-800">
+            <Link
+              to="/admin/blogs"
+              className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1"
+            >
               View all
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
 
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map((item) => (
-                <div key={item} className="h-14 animate-pulse rounded-lg bg-slate-100" />
+                <div key={item} className="h-16 animate-pulse rounded-xl bg-slate-700/50" />
               ))}
             </div>
           ) : popularPosts.length > 0 ? (
-            <div className="divide-y divide-slate-100">
+            <div className="space-y-2">
               {popularPosts.map((post, index) => (
                 <Link
                   key={post.id}
-                  to={`/blogs/edit/${post.id}`}
-                  className="flex items-center gap-3 py-3 transition-colors hover:bg-slate-50"
+                  to={`/admin/blogs/edit/${post.id}`}
+                  className="group flex items-center gap-3 p-3 rounded-xl hover:bg-slate-700/40 transition-all duration-200"
                 >
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-600">
+                  {/* Rank badge */}
+                  <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${RANK_COLORS[index] ?? RANK_COLORS[RANK_COLORS.length - 1]}`}>
                     {index + 1}
                   </span>
+
+                  {/* Post info */}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-slate-950">{post.title}</p>
-                    <div className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                      <span>{postTypeLabel(post.type)}</span>
-                      <span className="h-1 w-1 rounded-full bg-slate-300" />
-                      <span>{post.author?.name ?? 'Unknown'}</span>
+                    <p className="truncate text-sm font-medium text-white group-hover:text-violet-300 transition-colors">{post.title}</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-semibold border ${TYPE_COLORS[post.type]}`}>
+                        {postTypeLabel(post.type)}
+                      </span>
+                      <span className="text-xs text-slate-500 truncate">{post.author?.name ?? 'Unknown'}</span>
                     </div>
                   </div>
+
+                  {/* Views */}
                   <div className="shrink-0 text-right">
-                    <p className="text-sm font-semibold text-slate-950">{formatNumber(post.views ?? 0)}</p>
-                    <p className="text-xs text-slate-400">views</p>
+                    <p className="text-sm font-bold text-white">{formatNumber(post.views ?? 0)}</p>
+                    <p className="text-[10px] text-slate-500">views</p>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="rounded-lg bg-slate-50 p-6 text-center">
-              <p className="text-sm text-slate-500">No popular posts yet</p>
+            <div className="rounded-xl bg-slate-700/30 p-6 text-center">
+              <p className="text-sm text-slate-400">No popular posts yet</p>
             </div>
           )}
         </section>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Draft Queue</p>
-          <p className="mt-2 text-2xl font-bold text-slate-950">
-            {loading ? '-' : formatNumber(draftCount)}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">Posts waiting to publish</p>
+      {/* ── Quick Metrics Row ── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {/* Draft Queue */}
+        <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200">
+          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-rose-500/10 blur-xl" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/20 flex items-center justify-center">
+                <svg className="w-5 h-5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Draft Queue</span>
+            </div>
+            <p className="text-4xl font-extrabold text-white">
+              {loading ? (
+                <span className="inline-block h-10 w-16 rounded bg-slate-700 animate-pulse" />
+              ) : formatNumber(draftCount)}
+            </p>
+            <p className="mt-1 text-sm text-slate-400">posts waiting to publish</p>
+          </div>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Average Views</p>
-          <p className="mt-2 text-2xl font-bold text-slate-950">
-            {loading || stats.totalPosts === 0 ? '-' : formatNumber(averageViews)}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">Per post</p>
+
+        {/* Average Views */}
+        <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200">
+          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-sky-500/10 blur-xl" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/20 flex items-center justify-center">
+                <svg className="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Avg. Views</span>
+            </div>
+            <p className="text-4xl font-extrabold text-white">
+              {loading || stats.totalPosts === 0 ? (
+                <span className="text-slate-500">—</span>
+              ) : formatNumber(averageViews)}
+            </p>
+            <p className="mt-1 text-sm text-slate-400">per post on average</p>
+          </div>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm font-medium text-slate-500">Latest Update</p>
-          <p className="mt-2 text-2xl font-bold text-slate-950">
-            {loading ? '-' : recentPosts[0] ? timeAgo(recentPosts[0].createdAt) : 'No posts'}
-          </p>
-          <p className="mt-1 text-sm text-slate-500">Most recent content activity</p>
+
+        {/* Publish Rate */}
+        <div className="group relative overflow-hidden rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6 hover:bg-slate-800/70 transition-all duration-200">
+          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-emerald-500/10 blur-xl" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-slate-400">Publish Rate</span>
+            </div>
+            <p className="text-4xl font-extrabold text-white">
+              {loading ? (
+                <span className="inline-block h-10 w-16 rounded bg-slate-700 animate-pulse" />
+              ) : `${publishRate}%`}
+            </p>
+            {/* mini progress bar */}
+            <div className="mt-3 h-1.5 rounded-full bg-slate-700 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-700"
+                style={{ width: `${loading ? 0 : publishRate}%` }}
+              />
+            </div>
+            <p className="mt-1.5 text-sm text-slate-400">of posts are published</p>
+          </div>
         </div>
       </div>
+
+      {/* ── Quick Actions Row ── */}
+      {isAuthor() && (
+        <div className="rounded-2xl bg-slate-800/50 border border-slate-700/50 p-6">
+          <h2 className="text-base font-semibold text-white mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {[
+              { label: 'Write a Post', href: '/admin/blogs/create', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z', color: 'bg-violet-500/10 border-violet-500/20 text-violet-400 hover:bg-violet-500/20' },
+              { label: 'View Blogs', href: '/admin/blogs', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', color: 'bg-sky-500/10 border-sky-500/20 text-sky-400 hover:bg-sky-500/20' },
+              { label: 'Manage Tags', href: '/admin/tags', icon: 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', color: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' },
+              { label: 'View Messages', href: '/admin/comments', icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', color: 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20' },
+            ].map(({ label, href, icon, color }) => (
+              <Link
+                key={label}
+                to={href}
+                className={`group flex flex-col items-center gap-3 p-4 rounded-xl border transition-all duration-200 hover:-translate-y-0.5 ${color}`}
+              >
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-current/5">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
+                  </svg>
+                </div>
+                <span className="text-xs font-medium text-center leading-tight">{label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

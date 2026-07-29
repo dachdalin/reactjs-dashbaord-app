@@ -71,16 +71,16 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 hidden md:flex items-center justify-between px-8 py-4 bg-white/85 backdrop-blur-xl border-b border-slate-200">
+      <header className="sticky top-0 z-30 hidden md:flex items-center justify-between px-8 py-4 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
         <div>
-          <h2 className="text-lg font-semibold text-slate-950">Welcome back, {displayName}!</h2>
-          <p className="text-sm text-slate-500">Here's what's happening with your projects today.</p>
+          <h2 className="text-lg font-semibold text-white">Welcome back, {displayName}!</h2>
+          <p className="text-sm text-slate-400">Here's what's happening with your projects today.</p>
         </div>
         <div className="flex items-center gap-3">
           {/* Send Notification Button */}
           <button
             onClick={() => setShowSendModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-sky-500 text-slate-950 text-xs font-medium flex items-center gap-1.5 hover:opacity-90 transition-all shadow-md shadow-sky-200/60"
+            className="px-3.5 py-2 rounded-xl bg-violet-600 text-white text-xs font-medium flex items-center gap-1.5 hover:bg-violet-500 transition-all shadow-md shadow-violet-900/40"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -93,7 +93,7 @@ export default function Header() {
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input type="text" placeholder="Search..." className="w-64 pl-10 pr-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-transparent transition-all" />
+            <input type="text" placeholder="Search..." className="w-64 pl-10 pr-4 py-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/40 transition-all" />
           </div>
 
           {/* Notifications Bell */}
@@ -101,14 +101,14 @@ export default function Header() {
             <button
               id="notifications-bell"
               onClick={() => setOpen((o) => !o)}
-              className="relative p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-sky-700 hover:bg-slate-50 transition-all"
+              className="relative p-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-400 hover:text-violet-300 hover:bg-slate-700/60 transition-all"
               aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-sky-500 text-slate-950 text-xs flex items-center justify-center font-bold animate-pulse">
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-violet-500 text-white text-xs flex items-center justify-center font-bold animate-pulse">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
@@ -116,13 +116,13 @@ export default function Header() {
 
             {/* Dropdown */}
             {open && (
-              <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-sky-200/70 overflow-hidden z-50">
+              <div className="absolute right-0 mt-2 w-80 rounded-2xl bg-slate-800 border border-slate-700 shadow-2xl shadow-slate-900/80 overflow-hidden z-50">
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
-                  <span className="text-sm font-semibold text-slate-950">Notifications</span>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+                  <span className="text-sm font-semibold text-white">Notifications</span>
                   <div className="flex items-center gap-2">
                     {unreadCount > 0 && (
-                      <button onClick={markAllRead} className="text-xs text-slate-700 hover:text-sky-700 transition-colors">
+                      <button onClick={markAllRead} className="text-xs text-slate-400 hover:text-violet-300 transition-colors">
                         Mark all read
                       </button>
                     )}
@@ -130,30 +130,30 @@ export default function Header() {
                 </div>
 
               {/* List */}
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-200">
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-700/60">
                 {notifications.length === 0 ? (
                   <div className="px-4 py-8 text-center">
-                    <p className="text-slate-500 text-sm">No notifications yet</p>
+                    <p className="text-slate-400 text-sm">No notifications yet</p>
                   </div>
                 ) : (
                   notifications.map((n) => (
                     <button
                       key={n.id}
                       onClick={() => markRead(n.id)}
-                      className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-slate-50 transition-colors ${!n.isRead ? "bg-slate-50" : ""}`}
+                      className={`w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-slate-700/40 transition-colors ${!n.isRead ? "bg-slate-700/30" : ""}`}
                     >
                       <span className="text-lg shrink-0 mt-0.5">{TYPE_ICONS[n.type] ?? "🔔"}</span>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <p className={`text-sm font-medium truncate ${n.isRead ? "text-slate-700" : "text-slate-950"}`}>
+                          <p className={`text-sm font-medium truncate ${n.isRead ? "text-slate-400" : "text-white"}`}>
                             {n.title}
                           </p>
                           {!n.isRead && (
-                            <div className="h-2 w-2 rounded-full bg-sky-500 shrink-0" />
+                            <div className="h-2 w-2 rounded-full bg-violet-400 shrink-0" />
                           )}
                         </div>
                         <p className="text-xs text-slate-500 line-clamp-1">{n.message}</p>
-                        <p className="text-[10px] text-slate-400 mt-0.5">{timeAgo(n.createdAt)}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{timeAgo(n.createdAt)}</p>
                       </div>
                     </button>
                   ))
@@ -162,8 +162,8 @@ export default function Header() {
 
               {/* Footer */}
               {notifications.length > 0 && (
-                <div className="px-4 py-2.5 border-t border-slate-200 bg-slate-50">
-                  <p className="text-xs text-center text-slate-500">
+                <div className="px-4 py-2.5 border-t border-slate-700 bg-slate-800/50">
+                  <p className="text-xs text-center text-slate-400">
                     {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}` : "All caught up!"}
                   </p>
                 </div>

@@ -9,12 +9,12 @@ export default function RootLayout({
     children: React.ReactNode;
     }) {
     return (
-  <div className="flex h-screen bg-slate-50 w-full">
+  <div className="flex h-screen bg-slate-950 w-full">
       {/* Decorative background elements */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-sky-100 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-sky-100 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-sky-100 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-violet-900/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-indigo-900/20 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 right-1/3 w-96 h-96 bg-slate-800/40 rounded-full blur-3xl" />
       </div>
 
       {/* Sidebar - Hidden on mobile, visible on md+ */}
@@ -47,7 +47,7 @@ export default function RootLayout({
           {/* Top header bar */}
             <Header />
           {/* Page content */}
-          <div className="min-h-full bg-slate-50 p-6 md:p-8 pt-20 md:pt-8">
+          <div className="min-h-full bg-slate-950 p-6 md:p-8 pt-20 md:pt-8">
             {children}
           </div>
         </div>
